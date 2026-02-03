@@ -3,105 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEO-HACK V4.2: İKLİM OPERASYONU</title>
+    <title>GEO-HACK V5.0: FULL OPERASYON</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* CSS: Carmen Sandiego / Hacker Hibrit Tema */
+        /* CSS: Hacker Tema */
         body {
-            background-color: #1a1a1a;
-            color: #00ff41;
+            background-color: #111;
+            color: #0f0;
             font-family: 'Share Tech Mono', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 10px;
+            padding: 5px;
             user-select: none;
-            overflow: hidden;
         }
 
         #game-terminal {
             width: 100%;
-            max-width: 650px;
-            border: 4px solid #333;
+            max-width: 700px;
+            border: 3px solid #333;
             background-color: #000;
             position: relative;
             display: flex;
             flex-direction: column;
             height: 95vh;
-            box-shadow: 0 0 40px rgba(0, 255, 65, 0.15);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.1);
         }
 
         .top-bar {
             background: #222;
-            border-bottom: 2px solid #00ff41;
-            padding: 10px 15px;
+            border-bottom: 2px solid #0f0;
+            padding: 8px 15px;
             display: flex;
             justify-content: space-between;
-            font-size: 16px;
-            color: #fff;
+            font-size: 14px;
         }
-        .badge { background: #d32f2f; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 12px; letter-spacing: 1px; }
 
         .main-screen {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: repeating-linear-gradient(0deg, rgba(0, 255, 65, 0.02) 0px, rgba(0, 255, 65, 0.02) 1px, transparent 1px, transparent 2px);
+            padding: 15px;
+            background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.03) 0px, rgba(0, 255, 0, 0.03) 1px, transparent 1px, transparent 2px);
         }
 
-        .img-frame { border: 2px solid #555; padding: 3px; margin-bottom: 15px; background: #111; min-height: 180px; display: flex; align-items: center; justify-content: center;}
-        #scene-image { width: 100%; height: 180px; object-fit: cover; display: block; filter: grayscale(80%) sepia(20%) contrast(1.2); }
+        .img-frame { border: 1px solid #444; margin-bottom: 10px; background: #000; height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #scene-image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(80%) sepia(20%); }
 
         .log-text { 
-            font-size: 16px; line-height: 1.6; margin-bottom: 15px; color: #ddd; 
-            border-left: 3px solid #d32f2f; padding-left: 10px; min-height: 60px;
+            font-size: 15px; line-height: 1.5; margin-bottom: 15px; color: #eee; 
+            border-left: 3px solid #d32f2f; padding-left: 10px; min-height: 50px;
         }
 
-        /* TABLO TASARIMI */
-        .table-wrapper { overflow-x: auto; margin: 15px 0; border: 1px solid #444; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #ccc; text-align: center; min-width: 320px; }
-        .data-table th { background: #222; color: #00ff41; padding: 8px; border: 1px solid #444; }
-        .data-table td { border: 1px solid #444; padding: 6px; cursor: crosshair; }
+        /* TABLO */
+        .table-wrapper { overflow-x: auto; margin: 10px 0; border: 1px solid #333; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; color: #ccc; text-align: center; min-width: 320px; }
+        .data-table th { background: #222; color: #0f0; padding: 5px; border: 1px solid #444; }
+        .data-table td { border: 1px solid #444; padding: 5px; cursor: crosshair; }
         .data-table tr:hover { background: #111; }
         .data-table td:hover { background: #004400; color: #fff; }
 
-        /* SÜRÜKLE BIRAK */
-        .drag-area { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px; border: 1px dashed #555; }
-        .item { background: #003300; border: 1px solid #00ff41; padding: 5px 10px; cursor: pointer; font-size: 13px; }
-        .item.selected { background: #00ff41; color: #000; }
-        .zones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .zone { border: 2px solid #444; padding: 10px; min-height: 80px; text-align: center; }
-        .zone h4 { margin: 0 0 5px 0; font-size: 12px; color: #aaa; }
-        .zone.active { border-color: #00ff41; background: #0b220b; }
-
+        /* INPUT VE BUTONLAR */
         .input-group { display: flex; gap: 10px; margin-top: 10px; }
-        input { flex: 1; background: #111; border: 1px solid #00ff41; color: #00ff41; padding: 12px; font-family: inherit; font-size: 18px; text-transform: uppercase; }
+        input { flex: 1; background: #111; border: 1px solid #0f0; color: #0f0; padding: 10px; font-family: inherit; font-size: 16px; text-transform: uppercase; }
         
-        .control-panel { padding: 15px; background: #1a1a1a; display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .control-panel { padding: 10px; background: #1a1a1a; display: grid; grid-template-columns: 1fr; gap: 8px; }
         button {
-            background: #000; border: 1px solid #00ff41; color: #00ff41;
-            padding: 15px; font-family: inherit; font-size: 16px; cursor: pointer;
+            background: #000; border: 1px solid #0f0; color: #0f0;
+            padding: 12px; font-family: inherit; font-size: 15px; cursor: pointer;
             text-transform: uppercase; font-weight: bold; transition: 0.2s;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-        button:hover { background: #00ff41; color: #000; }
+        button:hover { background: #0f0; color: #000; }
         .btn-red { border-color: #d32f2f; color: #d32f2f; }
-        
+
+        /* SÜRÜKLE BIRAK */
+        .pool { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; padding: 10px; border: 1px dashed #555; margin-bottom: 10px; }
+        .item { background: #003300; border: 1px solid #0f0; padding: 5px 8px; cursor: pointer; font-size: 12px; }
+        .item.selected { background: #0f0; color: #000; }
+        .zones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .zone { border: 2px solid #444; padding: 10px; min-height: 80px; text-align: center; font-size: 12px; }
+        .zone.active { border-color: #0f0; background: #0b220b; }
+
+        /* ANİMASYONLAR */
         #plane-animation {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 100; display: none;
+            background: rgba(0,0,0,0.95); z-index: 100; display: none;
             justify-content: center; align-items: center; flex-direction: column;
         }
-        .plane-icon { font-size: 50px; animation: fly 2s linear infinite; }
-        @keyframes fly { 0% { transform: translateX(-100px) translateY(20px) rotate(10deg); } 50% { transform: translateX(0) translateY(-20px) rotate(-10deg); } 100% { transform: translateX(100px) translateY(20px) rotate(10deg); } }
-
-        /* Başlangıç Ekranı İçin */
+        .plane-icon { font-size: 60px; animation: fly 1.5s linear infinite; }
+        @keyframes fly { 0% { transform: translate(-100px, 20px) rotate(10deg); } 50% { transform: translate(0, -20px) rotate(-10deg); } 100% { transform: translate(100px, 20px) rotate(10deg); } }
+        
         .start-btn { animation: pulse 1.5s infinite; border-color: #d32f2f; color: #d32f2f; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); } 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); } 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 
+        /* Reklam Engelleyici */
         iframe, [class*="tiiny"], .tiiny-host-badge { display: none !important; }
     </style>
 </head>
@@ -109,18 +105,18 @@
 
     <div id="game-terminal">
         <div class="top-bar">
-            <span>SES: <span style="color:#00ff41">BEKLEMEDE</span></span>
-            <span class="badge">DOSYA: V.I.L.E-2026</span>
+            <span>DURUM: <span id="status-text" style="color:#d32f2f">BEKLEMEDE</span></span>
+            <span>GÖREV: 10 AŞAMA</span>
         </div>
 
         <div class="main-screen" id="main-screen">
             <div class="img-frame">
-                <img id="scene-image" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800" alt="Mission Location">
+                <img id="scene-image" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800" alt="Cover">
             </div>
             <div id="game-text" class="log-text">
-                GÜVENLİ HAT KURULUYOR...<br>
-                AJAN, SİSTEME GİRİŞ YAPMAK İÇİN AŞAĞIDAKİ BUTONA BAS.<br>
-                <span style="font-size:12px; color:#666;">(Ses sisteminin çalışması için onayınız gerekiyor)</span>
+                GÜVENLİ HAT...<br>
+                AJAN, İKLİM KAOSUNU DURDURMAK İÇİN 10 GÖREVİ TAMAMLAMALISIN.<br>
+                <br>HAZIRSAN SİSTEMİ BAŞLAT.
             </div>
             
             <div id="dynamic-content"></div> 
@@ -128,12 +124,12 @@
         </div>
 
         <div class="control-panel" id="controls">
-            <button onclick="startGame()" class="start-btn">🔴 OPERASYONU BAŞLAT</button>
+            <button onclick="startGame()" class="start-btn">🔴 SİSTEMİ BAŞLAT</button>
         </div>
 
         <div id="plane-animation">
             <div class="plane-icon">✈️</div>
-            <div style="color:#00ff41; margin-top:20px;">HEDEF BÖLGEYE GİDİLİYOR...</div>
+            <div style="color:#0f0; margin-top:20px;">HEDEF BÖLGEYE GİDİLİYOR...</div>
         </div>
     </div>
 
@@ -143,24 +139,7 @@
         let score = 100;
         let selectedItem = null;
 
-        // --- SES MOTORU ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playStaticNoise() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const bufferSize = audioCtx.sampleRate * 0.5; 
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.value = 0.05; 
-            noise.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            noise.start();
-        }
-
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -175,121 +154,167 @@
                 osc.start(); osc.stop(audioCtx.currentTime+1); 
             }
             else if(type==='success'){ 
-                osc.type='sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
+                osc.type='square'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
                 osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime+0.1);
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
-                osc.start(); osc.stop(audioCtx.currentTime+0.2); 
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
+                osc.start(); osc.stop(audioCtx.currentTime+0.15); 
             }
             else { 
                 osc.type='sawtooth'; osc.frequency.setValueAtTime(100, audioCtx.currentTime); 
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
                 osc.start(); osc.stop(audioCtx.currentTime+0.3); 
             }
         }
 
+        // --- 10 SORULUK SENARYO ---
         const scenario = [
+            // GÖREV 1: TABLO OKUMA
             {
                 id: 0,
-                location: "SİBİRYA ARAŞTIRMA ÜSSÜ",
                 image: "https://images.unsplash.com/photo-1518182170546-0766aa6f7926?w=800",
-                text: "GELEN MESAJ...<br>Ajan! Dr. Paralel Sibirya'da tespit edildi. İklim verilerini bozarak kaçtı. Bıraktığı izi sürmek için 'Hissedilen Sıcaklık' tablosunu çözmelisin.<br><br>VERİLER:<br>Hava: -10°C<br>Rüzgar: 20 km/sa<br><br>Tabloyu kullanarak hissedilen sıcaklığı (şifreyi) gir.",
-                clue: "Hesap yapma. Tabloda -10 ve 20'nin kesişimini bul.",
+                text: "[GÖREV 1/10] SİBİRYA<br>Dr. Paralel kaçtı. Bıraktığı şifre 'Hissedilen Sıcaklık'.<br>Veriler: <b>Hava -10°C, Rüzgar 20 km/sa</b>.<br>Tabloyu kullanarak şifreyi gir.",
+                clue: "Tabloda üstten -10'u, soldan 20'yi bul ve birleştir.",
                 type: "input_table",
-                correctAnswer: "-23",
-                targetCorrect: 1,
-                targetWrong: "wrong_0"
+                correctAnswer: "-23", targetCorrect: 1, targetWrong: "wrong_0"
             },
-            {
-                id: "wrong_0",
-                type: "dead_end",
-                image: "https://images.unsplash.com/photo-1594716942733-149b533f5280?w=800",
-                text: "BAĞLANTI HATASI!<br>Koordinat yanlış. Tablonun üst satırından -10'u, sol sütunundan 20'yi bul ve parmağınla birleştir.",
-                choices: [{ text: "TEKRAR DENE", target: 0, cost: 5 }]
-            },
+            { id: "wrong_0", type: "dead_end", image: "https://images.unsplash.com/photo-1629814596134-2e2124707198?w=800", text: "HATALI VERİ!<br>Tabloyu dikkatli oku. -10 sütunu ile 20 satırının kesişimi.", choices: [{text:"TEKRAR DENE", target:0}] },
+
+            // GÖREV 2: HARİTA KIYASLAMA (ISINMA)
             {
                 id: 1,
-                location: "NASA İKLİM MERKEZİ (ABD)",
-                image: "https://images.unsplash.com/photo-1541873676-a18131494184?w=800",
-                text: "ŞİFRE ONAYLANDI.<br>NASA uydularına erişim sağladık. Dr. Paralel, 1880 ve 2019 yıllarının sıcaklık haritalarını değiştirdi. Kendini 'En Çok Isınan' (En koyu kırmızı) bölgeye sakladı.<br><br>İki haritayı kıyasla ve saklandığı yeri bul.",
-                clue: "Hangi bölge daha kırmızı? Ekvator mu, Kutuplar mı?",
+                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800",
+                text: "[GÖREV 2/10] NASA UYDU MERKEZİ<br>Dr. Paralel 'En Çok Isınan' bölgeye saklandı. 1880 ve 2019 haritalarını kıyasla. En koyu kırmızı (en çok ısınan) bölge neresi?",
+                clue: "Ekvator mu daha kırmızı, yoksa Kutup noktası mı?",
                 type: "map_compare",
                 choices: [
-                    { text: "A) EKVATOR ÇEVRESİ", target: "wrong_1", cost: 10 },
-                    { text: "B) KUZEY KUTUP DAİRESİ", target: 2, cost: 0 },
-                    { text: "C) ORTA KUŞAK ÇÖLLERİ", target: "wrong_1", cost: 10 }
+                    { text: "A) EKVATOR VE ÇÖLLER", target: "wrong_1", cost: 5 },
+                    { text: "B) KUZEY KUTUP DAİRESİ", target: 2, cost: 0 }
                 ]
             },
-            {
-                id: "wrong_1",
-                type: "dead_end",
-                image: "https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=800",
-                text: "YANLIŞ BÖLGE!<br>Haritaya dikkatli bak. Ekvatordaki değişim az. Kutuplardaki kırmızılık çok daha yoğun.",
-                choices: [{ text: "HARİTAYA GERİ DÖN", target: 1, cost: 5 }]
-            },
+            { id: "wrong_1", type: "dead_end", image: "https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=800", text: "YANLIŞ!<br>Haritaya bak. Kutuplardaki kırmızılık çok daha yoğun.", choices: [{text:"GERİ DÖN", target:1}] },
+
+            // GÖREV 3: İNDİRGENMİŞ SICAKLIK (YENİ)
             {
                 id: 2,
-                location: "İSVİÇRE ALPLERİ",
-                image: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800",
-                text: "HEDEF TESPİT EDİLDİ.<br>Alplerdeyiz. Sıcaklık yapay olarak 3°C artırıldı. Soğuk seven 'Alpin Çiçekleri' tehlikede. Biyologlar onları bulamıyor.<br><br>İklim ısınınca bu bitkilerin yaşam alanı nereye kaymıştır?",
-                clue: "Hava ısınırsa serinlik nerede bulunur? Aşağıda mı, yukarıda mı?",
-                type: "choice",
-                choices: [
-                    { text: "A) DAĞIN ETEĞİNE (AŞAĞI)", target: "wrong_2", cost: 10 },
-                    { text: "B) DAĞIN ZİRVESİNE (YUKARI)", target: 3, cost: 0 },
-                    { text: "C) GÖL KENARINA (AYNI YER)", target: "wrong_2", cost: 10 }
-                ]
+                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+                text: "[GÖREV 3/10] AĞRI DAĞI (5137m)<br>Zirvedeki ajanımız donuyor! Zirvede hava <b>-20°C</b>. Deniz seviyesinde (0m) sıcaklık kaç derece olurdu?<br><i>(Kural: Her 200m'de sıcaklık 1°C artar.)</i>",
+                clue: "Hesapla: 5000 metre fark var. 5000 / 200 = 25 derece fark eder. -20'ye 25 ekle.",
+                type: "input_simple",
+                correctAnswer: "5", targetCorrect: 3, targetWrong: "wrong_2"
             },
-            {
-                id: "wrong_2",
-                type: "dead_end",
-                image: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800",
-                text: "BİTKİLER KURUDU!<br>Aşağılar daha sıcaktır. Isınan dünyada soğuk seven bitkiler daha yükseğe (Zirveye) kaçar.",
-                choices: [{ text: "ZAMANI GERİ AL", target: 2, cost: 5 }]
-            },
+            { id: "wrong_2", type: "dead_end", image: "https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?w=800", text: "HESAP HATASI!<br>5000m aşağı inersen hava ısınır. 25 derece ısınması lazım. -20 + 25 = ?", choices: [{text:"TEKRAR HESAPLA", target:2}] },
+
+            // GÖREV 4: BİTKİ GÖÇÜ (DİKEY)
             {
                 id: 3,
-                location: "ENDONEZYA VOLKANI",
-                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
-                text: "ZİRVEDE BULUNDUK.<br>Son aşama: Dr. Paralel bir sürü afet yarattı. Haberlerde 'Hepsi İklim Değişikliği' deniyor ama biri YALAN. Biri yerin altından geliyor.<br><br>Hangisi atmosfer kökenli değildir (Jeolojiktir)?",
-                clue: "Yerin altından geleni 'Doğal' kutusuna at.",
-                type: "sort_game",
-                targetCorrect: 4,
-                items: [
-                    { id: "i1", text: "Orman Yangını", type: "iklim" },
-                    { id: "i2", text: "Volkan Patlaması", type: "jeolojik" },
-                    { id: "i3", text: "Kuraklık", type: "iklim" },
-                    { id: "i4", text: "Kasırga", type: "iklim" }
-                ],
-                zones: [
-                    { id: "iklim", label: "İKLİM SİLAHI (ATMOSFER)" },
-                    { id: "jeolojik", label: "DOĞAL (YERİN ALTI)" }
+                image: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800",
+                text: "[GÖREV 4/10] İSVİÇRE ALPLERİ<br>Küresel ısınma yüzünden dağdaki soğuk seven çiçekler yaşam alanı değiştiriyor. Onları bulmak için dağın neresine bakmalısın?",
+                clue: "Hava ısınırsa serinlik nerede bulunur? Zirvede mi, etekte mi?",
+                type: "choice",
+                choices: [
+                    { text: "A) AŞAĞI (ETEKLERE)", target: "wrong_3", cost: 5 },
+                    { text: "B) YUKARI (ZİRVEYE)", target: 4, cost: 0 }
                 ]
             },
+            { id: "wrong_3", type: "dead_end", image: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800", text: "YANLIŞ!<br>Aşağılar daha sıcaktır. Bitkiler serinlemek için yukarı kaçar.", choices: [{text:"GERİ DÖN", target:3}] },
+
+            // GÖREV 5: OKYANUS AKINTILARI (YENİ)
             {
                 id: 4,
-                location: "SON KAÇIŞ ROTASI",
+                image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800",
+                text: "[GÖREV 5/10] ATLAS OKYANUSU<br>Gemimiz İngiltere'ye gidiyor. Bizi ısıtacak ve hızlandıracak <b>SICAK</b> su akıntısını bulmalısın. Adı ne?",
+                clue: "Avrupa'nın batısını ısıtan meşhur akıntı.",
+                type: "choice",
+                choices: [
+                    { text: "A) LABRADOR (SOĞUK)", target: "wrong_4", cost: 5 },
+                    { text: "B) GULF STREAM (SICAK)", target: 5, cost: 0 },
+                    { text: "C) KANARYA (SOĞUK)", target: "wrong_4", cost: 5 }
+                ]
+            },
+            { id: "wrong_4", type: "dead_end", image: "https://images.unsplash.com/photo-1498335707130-ba50285e74eb?w=800", text: "YANLIŞ AKINTI!<br>Seçtiğin akıntı soğuktur, gemiyi yavaşlatır. Bize sıcak lazım.", choices: [{text:"GERİ DÖN", target:4}] },
+
+            // GÖREV 6: NEM VE SICAKLIK (YENİ)
+            {
+                id: 5,
+                image: "https://images.unsplash.com/photo-1504280501179-fac52dd2368f?w=800",
+                text: "[GÖREV 6/10] ÇÖL VS ORMAN<br>Dr. Paralel bir şehrin nemini çaldı. Nemli hava yavaş ısınıp yavaş soğur. Aşağıdaki hangi şehir <b>NEMLİDİR</b>?",
+                clue: "Gece ile gündüz arasındaki sıcaklık farkı AZ olan nemlidir.",
+                type: "choice",
+                choices: [
+                    { text: "A) GÜNDÜZ 40°C / GECE -5°C", target: "wrong_5", cost: 5 }, // Çöl
+                    { text: "B) GÜNDÜZ 25°C / GECE 20°C", target: 6, cost: 0 }  // Nemli
+                ]
+            },
+            { id: "wrong_5", type: "dead_end", image: "https://images.unsplash.com/photo-1541893335552-3620f5c1564f?w=800", text: "DİKKAT!<br>Seçtiğin şehirde fark çok fazla (45 derece). Bu çöldür, nem yoktur. Farkı az olanı seç.", choices: [{text:"GERİ DÖN", target:5}] },
+
+            // GÖREV 7: İZOTERM HARİTALARI (YENİ)
+            {
+                id: 6,
+                image: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800",
+                text: "[GÖREV 7/10] HARİTA ODASI<br>Dosyalar karıştı. Güney Yarım Küre'de denizler çok olduğu için İzoterm eğrileri daha <b>DÜZGÜNDÜR</b>. Hangi harita Güney Yarım Küre'ye aittir?",
+                clue: "Çizgilerin sapmadan dümdüz gittiği haritayı seç.",
+                type: "choice",
+                choices: [
+                    { text: "A) ÇOK KIVRIMLI ÇİZGİLER", target: "wrong_6", cost: 5 },
+                    { text: "B) DÜZGÜN GİDEN ÇİZGİLER", target: 7, cost: 0 }
+                ]
+            },
+            { id: "wrong_6", type: "dead_end", image: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ec?w=800", text: "YANLIŞ DOSYA!<br>Kıvrımlı çizgiler Kuzey Yarım Küre'dir (Kara çok olduğu için). Güneyde deniz çoktur, çizgiler düzgündür.", choices: [{text:"GERİ DÖN", target:6}] },
+
+            // GÖREV 8: GÜNEŞ AÇISI (YENİ)
+            {
+                id: 7,
+                image: "https://images.unsplash.com/photo-1532978379173-523e16f371f2?w=800",
+                text: "[GÖREV 8/10] GÖLGE BOYU<br>Ajanın gölgesinin en kısa olduğu yere gitmesi lazım. 21 Mart'ta öğlen vakti Güneş nereye en dik açıyla gelir (Gölge en kısa olur)?",
+                clue: "Güneş ışınlarının dik düştüğü yer Ekvator mudur, Kutuplar mı?",
+                type: "choice",
+                choices: [
+                    { text: "A) KUTUPLARA", target: "wrong_7", cost: 5 },
+                    { text: "B) EKVATORA", target: 8, cost: 0 }
+                ]
+            },
+            { id: "wrong_7", type: "dead_end", image: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800", text: "YANLIŞ!<br>Kutuplara güneş eğik gelir, gölge çok uzun olur. Ekvatora dik gelir.", choices: [{text:"GERİ DÖN", target:7}] },
+
+            // GÖREV 9: AFET SINIFLANDIRMA
+            {
+                id: 8,
+                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+                text: "[GÖREV 9/10] ENDONEZYA<br>Haberlerdeki yalanı bul. Hangi afet İklim Değişikliği (Atmosfer) kökenli DEĞİLDİR?",
+                clue: "Yerin altından geleni bul.",
+                type: "sort_game",
+                targetCorrect: 9,
+                items: [
+                    { id: "i1", text: "Sel", type: "iklim" },
+                    { id: "i2", text: "Volkan", type: "jeolojik" },
+                    { id: "i3", text: "Kuraklık", type: "iklim" },
+                    { id: "i4", text: "Deprem", type: "jeolojik" }
+                ],
+                zones: [
+                    { id: "iklim", label: "İKLİMSEL" },
+                    { id: "jeolojik", label: "JEOLOJİK (YER)" }
+                ]
+            },
+
+            // GÖREV 10: HELİKOPTER KAÇIŞI (TABLO)
+            {
+                id: 9,
                 image: "https://images.unsplash.com/photo-1521406606085-f37699317079?w=800",
-                text: "KÖŞEYE SIKIŞTI!<br>Helikopterle kaçacak ama motoru <b>-40°C</b> ve altında donuyor.<br><br>Hangi hava durumunu seçerse motoru donar ve onu yakalarız?",
+                text: "[FİNAL GÖREVİ] KAÇIŞ ROTASI<br>Dr. Paralel'in motoru <b>-40°C</b> ve altında donuyor. Tabloda hangi hava durumunda motor donar?",
                 clue: "Tabloda karşılığı -40 veya daha küçük (soğuk) olanı bul.",
                 type: "choice_table",
                 choices: [
-                    { text: "A) HAVA -15 / RÜZGAR 10", target: "wrong_4", cost: 5 }, 
-                    { text: "B) HAVA -10 / RÜZGAR 30", target: "wrong_4", cost: 5 }, 
+                    { text: "A) HAVA -15 / RÜZGAR 10", target: "wrong_8", cost: 5 }, 
+                    { text: "B) HAVA -10 / RÜZGAR 30", target: "wrong_8", cost: 5 }, 
                     { text: "C) HAVA -20 / RÜZGAR 30", target: 99, cost: 0 }  
                 ]
             },
-            {
-                id: "wrong_4",
-                type: "dead_end",
-                image: "https://images.unsplash.com/photo-1517480447814-68894451016c?w=800",
-                text: "HELİKOPTER KAÇTI!<br>Seçtiğin rotada motor donmadı. Tabloya tekrar bak.",
-                choices: [{ text: "TEKRAR DENE", target: 4, cost: 5 }]
-            },
+            { id: "wrong_8", type: "dead_end", image: "https://images.unsplash.com/photo-1517480447814-68894451016c?w=800", text: "KAÇTI!<br>Seçtiğin rotada motor donmadı. Tabloda daha soğuk bir değer bul.", choices: [{text:"TEKRAR DENE", target:9}] },
+
+            // BİTİŞ
             {
                 id: 99,
-                location: "GÖREV TAMAMLANDI",
                 image: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800",
-                text: "OPERASYON BAŞARILI!<br>Dr. Paralel yakalandı. İklim dengesi sağlandı.<br><br>Aşağıdaki KODU kopyala ve Rapor Formuna yapıştır.",
+                text: "GÖREV TAMAMLANDI!<br>Dünyayı kurtardın Ajan. İklim dengesi sağlandı.<br><br>Aşağıdaki KODU kopyala ve öğretmene gönder.",
                 isEnd: true,
                 choices: []
             }
@@ -297,14 +322,10 @@
 
         function startGame() { 
             score = 100; 
-            // Ses Bağlamını Başlat (Tarayıcı İzni İçin)
+            document.getElementById("status-text").innerText = "ONLİNE";
+            document.getElementById("status-text").style.color = "#0f0";
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            playStaticNoise(); 
             loadScene(0); 
-            
-            // Top Bar'ı Güncelle
-            document.querySelector('.top-bar span span').innerText = "AKTİF";
         }
 
         function showPlaneAnimation(callback) {
@@ -314,12 +335,7 @@
             setTimeout(() => {
                 plane.style.display = "none";
                 callback();
-            }, 1500);
-        }
-
-        function typeWriter(text, element) {
-            element.innerHTML = text;
-            playStaticNoise(); 
+            }, 1200);
         }
 
         function loadScene(sceneId) {
@@ -333,38 +349,33 @@
             contentDiv.innerHTML = "";
             document.getElementById("clue-box").innerText = scene.clue || "";
             image.src = scene.image;
+            textDiv.innerHTML = scene.text;
 
-            typeWriter(scene.text, textDiv);
-
-            // İÇERİK TİPLERİ
-            if(scene.type === "input_table" || scene.type === "choice_table") {
-                renderTable(contentDiv);
-            }
+            // İÇERİK
+            if(scene.type === "input_table" || scene.type === "choice_table") renderTable(contentDiv);
             if(scene.type === "map_compare") {
                 contentDiv.innerHTML = `
                     <div style="display:flex; gap:5px; overflow-x:auto;">
-                        <div style="flex:1; min-width:150px; text-align:center; color:#fff;">
-                            <img src="https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004787/1884_Region.jpg" style="width:100%; border:1px solid #555;">
-                            <br>1880 YILI
+                        <div style="flex:1; text-align:center; color:#fff;">
+                            <img src="https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004787/1884_Region.jpg" style="width:100%; border:1px solid #555;"><br>1880 YILI
                         </div>
-                        <div style="flex:1; min-width:150px; text-align:center; color:#ff5555;">
-                            <img src="https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004787/2019_Region.jpg" style="width:100%; border:1px solid #f00;">
-                            <br>2019 YILI
+                        <div style="flex:1; text-align:center; color:#f55;">
+                            <img src="https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004787/2019_Region.jpg" style="width:100%; border:1px solid #f00;"><br>2019 YILI
                         </div>
                     </div>`;
             }
 
             // KONTROLLER
-            if(scene.type === "input_table") {
-                contentDiv.innerHTML += `<div class="input-group"><input type="text" id="ans" placeholder="ŞİFRE..."><button onclick="checkInput('${scene.correctAnswer}', ${scene.targetCorrect}, '${scene.targetWrong}')">GİRİŞ</button></div>`;
+            if(scene.type === "input_table" || scene.type === "input_simple") {
+                contentDiv.innerHTML += `<div class="input-group"><input type="text" id="ans" placeholder="CEVAP..."><button onclick="checkInput('${scene.correctAnswer}', ${scene.targetCorrect}, '${scene.targetWrong}')">GÖNDER</button></div>`;
             } 
             else if(scene.type === "sort_game") {
                 renderDragGame(scene, contentDiv);
             }
             else if(scene.isEnd) {
-                const code = `GEO-${Math.floor(Math.random()*1000)}-${score}`;
-                contentDiv.innerHTML = `<div style="border:2px dashed #00ff41; padding:20px; text-align:center; font-size:24px; margin:20px 0;">${code}</div>`;
-                controls.innerHTML = `<button onclick="window.open('${googleFormLink}', '_blank')">RAPORU GÖNDER >></button><button onclick="startGame()">YENİ GÖREV</button>`;
+                const code = `GEO-${Math.floor(Math.random()*9000)+1000}-${score}`;
+                contentDiv.innerHTML = `<div style="border:2px dashed #0f0; padding:20px; text-align:center; font-size:24px; margin:20px 0;">${code}</div>`;
+                controls.innerHTML = `<button onclick="window.open('${googleFormLink}', '_blank')">RAPORLA >></button><button onclick="startGame()">YENİDEN OYNA</button>`;
             }
             else if(scene.choices) {
                 scene.choices.forEach(c => {
@@ -407,7 +418,6 @@
         // --- SÜRÜKLE BIRAK ---
         function renderDragGame(scene, container) {
             const dragDiv = document.createElement("div");
-            dragDiv.className = "drag-area";
             let poolHTML = ""; scene.items.forEach(i => poolHTML += `<div class="item" id="${i.id}" data-type="${i.type}" onclick="selectItem(this)">${i.text}</div>`);
             let zonesHTML = ""; scene.zones.forEach(z => zonesHTML += `<div class="zone" id="${z.id}" onclick="placeItem(this, ${scene.targetCorrect})"><h4>${z.label}</h4></div>`);
             dragDiv.innerHTML = `<div class="pool" id="pool">${poolHTML}</div><div class="zones">${zonesHTML}</div>`;
@@ -428,6 +438,7 @@
             selectedItem.classList.remove("selected");
             selectedItem = null;
             document.querySelectorAll(".zone").forEach(z => z.classList.remove("active"));
+            
             if(document.getElementById("pool").children.length === 0) {
                 let correct = true;
                 document.querySelectorAll(".zone").forEach(z => {
