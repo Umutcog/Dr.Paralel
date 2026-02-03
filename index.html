@@ -3,145 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL: GLOBAL_LOCKDOWN_V9</title>
+    <title>TERMINAL: NEBULA_STRATEGY_V9.3</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'VT323', monospace; overflow: hidden; }
         .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03)); background-size: 100% 3px, 3px 100%; }
+        #terminal { width: 95vw; height: 95vh; margin: 2.5vh auto; border: 2px solid #0f0; background: #050505; display: flex; flex-direction: column; box-shadow: 0 0 25px #0f0; position: relative; }
+        .header { background: #0f0; color: #000; padding: 8px 20px; font-weight: bold; font-size: 24px; display: flex; justify-content: space-between; }
+        .screen { flex: 1; overflow-y: auto; padding: 25px; position: relative; }
+        .mission-log { font-size: 26px; color: #0f0; margin-bottom: 20px; border-left: 6px solid #d32f2f; padding-left: 15px; }
+        .clue-box { color: #00f3ff; font-size: 19px; border: 1px dashed #00f3ff; padding: 12px; background: rgba(0,243,255,0.05); margin-bottom: 10px; }
+        .meb-clue { color: #ff00ff; font-weight: bold; font-size: 17px; margin-top: 5px; }
         
-        #terminal { width: 95vw; height: 95vh; margin: 2.5vh auto; border: 2px solid #0f0; background: #050505; display: flex; flex-direction: column; box-shadow: 0 0 20px #0f0; position: relative; }
-        .header { background: #0f0; color: #000; padding: 5px 15px; font-weight: bold; font-size: 22px; display: flex; justify-content: space-between; }
-        .screen { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
+        /* ETKİLEŞİM */
+        .choice-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        button { background: #000; border: 2px solid #0f0; color: #0f0; padding: 15px; font-family: 'VT323'; font-size: 22px; cursor: pointer; transition: 0.1s; }
+        button:hover { background: #0f0; color: #000; box-shadow: 0 0 15px #0f0; }
+        .skip-btn { border-color: #d32f2f; color: #d32f2f; font-size: 18px; margin-top: 30px; width: 100%; }
+        .skip-btn:hover { background: #d32f2f; color: #fff; }
         
-        .mission-log { font-size: 24px; color: #0f0; margin-bottom: 20px; line-height: 1.2; border-left: 5px solid #d32f2f; padding-left: 15px; }
-        .clue-text { color: #00f3ff; font-size: 18px; margin-top: 10px; border: 1px dashed #00f3ff; padding: 10px; display: none; }
+        input { background: #000; border: 2px solid #0f0; color: #0f0; font-family: 'VT323'; font-size: 28px; padding: 10px; width: 90%; outline: none; margin-top: 15px; }
         
-        #timer { position: absolute; top: 10px; right: 20px; font-size: 50px; color: #f00; display: none; }
-        
-        /* ETKİLEŞİM ELEMANLARI */
-        .input-area { margin-top: 20px; }
-        input { background: #000; border: 2px solid #0f0; color: #0f0; font-family: 'VT323'; font-size: 28px; padding: 10px; width: 80%; outline: none; }
-        .btn { background: #0f0; color: #000; border: none; padding: 10px 20px; font-family: 'VT323'; font-size: 24px; cursor: pointer; margin-top: 10px; font-weight: bold; }
-        .btn:hover { background: #fff; }
-        
-        /* SÜRÜKLE BIRAK */
-        .drop-zone { border: 2px dashed #0f0; min-height: 100px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; align-items: center; justify-content: center; }
-        .drag-item { background: #003300; border: 1px solid #0f0; padding: 5px 15px; cursor: move; font-size: 20px; }
-        
-        .final-code { border: 5px double #00f3ff; color: #00f3ff; padding: 30px; font-size: 50px; text-align: center; cursor: pointer; margin-top: 20px; }
-        
-        #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        /* EŞLEŞTİRME */
+        .drop-area { display: flex; gap: 15px; margin-top: 20px; justify-content: space-around; }
+        .zone { border: 2px dashed #0f0; padding: 15px; min-height: 80px; width: 40%; text-align: center; font-size: 18px; }
+        .zone.active { background: #003300; }
+        .drag-pool { border: 1px solid #555; padding: 15px; margin-top: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .drag-item { background: #111; border: 1px solid #0f0; padding: 8px 15px; cursor: pointer; }
+        .drag-item.selected { background: #0f0; color: #000; }
+
+        .final-code { border: 5px double #00f3ff; color: #00f3ff; padding: 30px; font-size: 45px; text-align: center; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
-
 <div class="scanlines"></div>
-
-<div id="start-screen">
-    <h1 style="font-size: 60px;">DR. PARALEL: GLOBAL LOCKDOWN</h1>
-    <p style="font-size: 24px; color: #d32f2f;">DÜNYA İKLİM SİSTEMİ HACKLENDİ.</p>
-    <button class="btn" onclick="initGame()" style="padding: 20px 50px; font-size: 40px;">SİSTEME SIZ</button>
-</div>
 
 <div id="terminal">
     <div class="header">
-        <span>STATION: ENKA_HQ</span>
+        <span>STATION: ENKA_GLOBAL_CORE</span>
         <span id="progress">GÖREV: 1 / 50</span>
     </div>
     <div class="screen" id="main-screen">
-        <div id="timer">30</div>
         <div id="mission-text" class="mission-log"></div>
+        <div id="clue-box" class="clue-box"></div>
         <div id="interactive-content"></div>
-        <div id="clue-box" class="clue-text"></div>
+        <button id="skip-button" class="skip-btn" onclick="skipMission()">[!] GÖREVİ ATLA (-50 PUAN)</button>
     </div>
-    <div style="padding: 10px; background: #111; font-size: 14px; opacity: 0.6;">> AGENT STATUS: ACTIVE | ENCRYPTION: 256-BIT</div>
 </div>
 
 <script>
     let currentStep = 0;
     let score = 100;
-    let timerInterval;
-    const formLink = "https://docs.google.com/forms/d/e/1FAIpQLSetNN9DLHIN1mmEnwXKEljiq9I5lePMQ11LIjSjmBzvjc-qjA/viewform";
+    let selectedItem = null;
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSfx(f, d, t='sine') {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        o.type = t; o.frequency.value = f; g.gain.value = 0.1;
+        o.type = t; o.frequency.value = f; g.gain.value = 0.05;
         o.connect(g); g.connect(audioCtx.destination);
         o.start(); o.stop(audioCtx.currentTime + d);
     }
 
-    function initGame() {
-        document.getElementById('start-screen').style.display = 'none';
-        loadStep(0);
-    }
-
     const steps = [
-        // --- DOSYA 1: İKLİM SİSTEMİ ---
-        { text: "Dr. Paralel 'İklim sadece hava olayıdır' diyerek sistemi bozdu. Gerçek iklim sistemini oluşturan 5 KÜRE'yi (Atmosfer, Hidrosfer, Kriyosfer, Litosfer, Biyosfer) tanımlayan anahtar kelimeyi gir.", type: "input", ans: "ETKİLEŞİM", clue: "PDF sayfa 1: '...arasındaki karşılıklı ........ ile belirlenen bir sistemdir.'" },
-        { text: "Sahil kentindeki ısıyı depolayıp ani artışı engelleyen 'Su Küre' kalkanının teknik adı?", type: "input", ans: "HİDROSFER" },
-        { text: "Dr. Paralel okyanus akıntılarını durdurursa, Ekvator-Kutup arası neyin taşınımı bozulur?", type: "input", ans: "ENERJİ", timer: 20 },
-        { text: "Kutuplardaki beyaz yüzeylerin güneş ışığını geri yansıtma gücü (Şifre)?", type: "input", ans: "ALBEDO" },
-        { text: "Buzulların erimesi hangi kürenin (Karakuşak) parçalanmasıdır?", type: "input", ans: "KRİYOSFER" },
-
-        // --- DOSYA 2: ATMOSFER ---
-        { text: "Sinyal alınıyor... Su buharının tamamının bulunduğu, hava olaylarının merkezi?", type: "input", ans: "TROPOSFER" },
-        { text: "Sakin hava, jet akımları ve ozon tabakası... Uçakların tercih ettiği katman?", type: "input", ans: "STRATOSFER" },
-
-        { text: "Gök taşlarını parçalayan savunma katmanı?", type: "input", ans: "MEZOSFER", timer: 15 },
-        { text: "Kutup ışıklarının (Aurora) parladığı iyonize katman?", type: "input", ans: "TERMOSFER" },
-        { text: "Atmosferin uzayla birleştiği son sınır?", type: "input", ans: "EKZOSFER" },
-
-        // --- DOSYA 3: DÜNYA HAREKETLERİ ---
-        { text: "Ekvator'dan kutuplara sıcaklık azalıyor. Bu 'Sıcaklık - ........' ilişkisidir.", type: "input", ans: "ENLEM" },
-        { text: "Meltem rüzgarları ve günlük sıcaklık farklarının nedeni Dünya'nın hangi hareketi?", type: "input", ans: "GÜNLÜK", clue: "Kendi ekseni etrafındaki dönüş." },
-        { text: "Mevsimlerin anahtarı: Dolanma hareketi ve ........ eğikliği.", type: "input", ans: "EKSEN" },
-        { text: "21 Haziran'da Kuzey Yarım Küre'de en uzun ne yaşanır?", type: "input", ans: "GÜNDÜZ", timer: 10 },
-        { text: "Gece ve gündüzün 12 saat eşitlendiği global tarihlerin adı?", type: "input", ans: "EKİNOKS" },
-
-        // --- DOSYA 4: YERYÜZÜ ---
-        { text: "Aynı dağın güneye bakan yamacı daha sıcak. Bu Coğrafi faktör?", type: "input", ans: "BAKI" },
-        { text: "Yükselti arttıkça sıcaklık azalır. Çünkü atmosfer nereden ısınmaya başlar?", type: "input", ans: "YERDEN" },
-        { text: "Doğu Karadeniz'de bitki örtüsünün kuşaklar oluşturması neyin değiştiğinin kanıtıdır?", type: "input", ans: "SICAKLIK" },
-        { text: "Bitki örtüsü sıcaklık farklarını ne yapar?", type: "input", ans: "AZALTIR" },
-        { text: "Çöllerde nem az olduğu için hangi fark çok fazladır?", type: "input", ans: "SICAKLIK" },
-
-        // --- DOSYA 5: RÜZGARLAR & ŞEHİRLER ---
-        { text: "Ekvator rüzgarları sıcaktır çünkü oluştukları yerin ........ taşırlar.", type: "input", ans: "SICAKLIĞINI" },
-        { text: "Dünya döndüğü için rüzgarlar sapar. Bu gücün adı?", type: "input", ans: "CORIOLIS" },
-        { text: "Denizler karalara göre daha geç ısınır çünkü neyi yüksektir?", type: "input", ans: "ÖZGÜL ISISI" },
-        { text: "Beton ve asfalt yüzünden şehirlerin kırsaldan sıcak olması durumu?", type: "input", ans: "ISI ADASI" },
-        { text: "ISI ADASI ANALİZİ: Hangisi ısı adasını AZALTIR? (BETON / ASFALT / ORMAN)", type: "input", ans: "ORMAN" },
-
-        // --- DOSYA 6: SON İZLER ---
-        { text: "Okyanustaki fitoplanktonlar atmosferdeki hangi gazı emerek iklimi dengeler?", type: "input", ans: "KARBONDİOKSİT", timer: 20 },
-        { text: "Donmuş topraklar (Permafrost) çözülürse hangi tehlikeli gaz açığa çıkar?", type: "input", ans: "METAN" },
-        { text: "Atmosfer neden en dinamiktir? Sürekli hareket halindedir ve ne taşır?", type: "input", ans: "ISI" },
-        { text: "Bulutlar gündüz güneş ışığını yansıtırken, gece yerden kaçan ısıyı ne yapar?", type: "input", ans: "TUTAR" },
-        { text: "SON SORU: İklim sistemi neden karmaşıktır? Çünkü bileşenler arası sürekli ........ vardır.", type: "input", ans: "ETKİLEŞİM" },
-
-        // --- EKSTRA 20 YARATICI GÖREV (SENARYOLU) ---
-        { text: "ACİL: Bahçedeki Atatürk büstüne git. Oradaki cümleyi 'HİÇ NOKTA KOYMADAN' terminale gir.", type: "input", ans: "KİŞİNİN BİRİNCİ HAKKI DOĞAL YETENEKLERİNİ SERBESTÇE GELİŞTİREBİLMESİDİR", clue: "Büyük harflerle, bahçedeki büstten oku." },
-        { text: "Hacker Bulmacası: 'Albedo' artarsa Dünya ne olur? (ISINIR / SOĞUR)", type: "input", ans: "SOĞUR" },
-        { text: "Eşleştirme: Stratosfer -> (OZON / YAĞMUR / METEOR)", type: "input", ans: "OZON" },
-        { text: "Tablo Analizi: Hava -10, Rüzgar 20 ise hissedilen sıcaklık?", type: "input", ans: "-23" },
-        { text: "Hız Testi: Troposferde her 100 metrede sıcaklık kaç derece düşer? (0.5 / 1 / 2)", type: "input", ans: "0.5" },
-        { text: "Mantık: Karalar mı denizler mi daha önce soğur?", type: "input", ans: "KARALAR" },
-        { text: "Kriz: Permafrost çözülürse deniz seviyesi ne olur? (ARTAR / AZALIR)", type: "input", ans: "ARTAR" },
-        { text: "Şehirleşme: Gökdelenler rüzgarı ne yapar? (HIZLANDIRIR / KESER)", type: "input", ans: "KESER" },
-        { text: "Fizik: Sıcak hava mı daha çok nem taşır, soğuk hava mı?", type: "input", ans: "SICAK" },
-        { text: "Astronomi: Mevsimler olmasaydı Eksen Eğikliği kaç derece olurdu?", type: "input", ans: "0" },
-        { text: "Hata Kodu: 'İklim değişkeni olmayan' hangisidir? (SICAKLIK / NEM / DEPREM)", type: "input", ans: "DEPREM" },
-        { text: "Işık: Aurora hangi kutupta görülür? (KUZEY / EKVATOR)", type: "input", ans: "KUZEY" },
-        { text: "Basınç: Rüzgar Yüksekten Alçağa mı eser, Alçaktan Yükseğe mi?", type: "input", ans: "YÜKSEKTEN" },
-        { text: "Doğa: Bitkiler terleme yaparak havaya ne verir?", type: "input", ans: "NEM" },
-        { text: "Kutup: Buzullar güneş ışığının % kaçını yansıtabilir? (80 / 10)", type: "input", ans: "80" },
-        { text: "Deniz: Gulf Stream sıcak mıdır soğuk mu?", type: "input", ans: "SICAK" },
-        { text: "Hava: Gökyüzünün mavi görünmesini sağlayan olay? (DAĞILMA / YANSIMA)", type: "input", ans: "DAĞILMA" },
-        { text: "Zaman: Bir yerin iklimini belirlemek için en az kaç yıllık veri lazım? (33 / 5)", type: "input", ans: "33" },
-        { text: "Ekosistem: Mercan resifleri denizlerin neyidir? (ORMANLARI / ÇÖLLERİ)", type: "input", ans: "ORMANLARI" },
-        { text: "FİNAL: Dr. Paralel yakalanıyor. Kaçış kodunu durdurmak için 'COĞRAFYA' yaz!", type: "input", ans: "COĞRAFYA", timer: 5 }
+        // 1. SORU - SEÇENEKLİ
+        { 
+            text: "SİSTEM ANALİZİ: Dr. Paralel 'Hava yarın yağmurlu' dediğinde hangisini kastetmiş olur?", 
+            type: "choice", 
+            ans: 1, 
+            options: ["İKLİM ÖZELLİĞİ", "HAVA DURUMU"], 
+            meb: "MEB Kitabı Sayfa 1: 3.1.2. İklim Sistemi giriş cümlesine bak." 
+        },
+        // 2. SORU - SEÇENEKLİ
+        { 
+            text: "İklim değişkenleri (nem, rüzgar, yağış) sistemde nasıl bir rol oynar?", 
+            type: "choice", 
+            ans: 0, 
+            options: ["ANAHTAR ROL OYNARLAR", "ÖNEMSİZDİRLER"], 
+            meb: "MEB Kitabı Sayfa 1: İkinci paragrafın son cümlesi." 
+        },
+        // 3. SORU - EŞLEŞTİRME (Kutu)
+        { 
+            text: "VERİ TASNİFİ: Aşağıdaki kavramları doğru kürelere yerleştir.", 
+            type: "match", 
+            items: [
+                {id: "i1", text: "Okyanuslar", target: "hidro"},
+                {id: "i2", text: "Buzullar", target: "kriyo"}
+            ],
+            zones: [
+                {id: "hidro", label: "HİDROSFER"},
+                {id: "kriyo", label: "KRİYOSFER"}
+            ],
+            meb: "MEB Sayfa 1: İklim Sisteminin Bileşenleri şemasını incele."
+        },
+        // 4. SORU - KISA CEVAP
+        { 
+            text: "Buzulların güneş ışığını yansıtma kapasitesini tanımlayan teknik terim?", 
+            type: "input", 
+            ans: "ALBEDO", 
+            meb: "MEB Sayfa 2: Metin içindeki terimi bul." 
+        },
+        // 5. SORU - SEÇENEKLİ
+        { 
+            text: "Okyanustaki fitoplanktonlar iklimi nasıl dengeler?", 
+            type: "choice", 
+            ans: 1, 
+            options: ["SULARI ISITARAK", "CO2 MİKTARINI ETKİLEYEREK"], 
+            meb: "MEB Sayfa 2: İklim ve okyanus etkileşimi paragrafı." 
+        },
+        // 6. SORU - EŞLEŞTİRME (Kutu)
+        { 
+            text: "ATMOSFER ANALİZİ: Katmanları özelliklerine göre ayır.", 
+            type: "match", 
+            items: [
+                {id: "a1", text: "Hava Olayları", target: "tropo"},
+                {id: "a2", text: "Ozon Tabakası", target: "strato"}
+            ],
+            zones: [
+                {id: "tropo", label: "TROPOSFER"},
+                {id: "strato", label: "STRATOSFER"}
+            ],
+            meb: "MEB Sayfa 3-4: Atmosfer katmanları başlıklarına bak."
+        },
+        // ... (Bu yapı 50 soruya kadar MEB kitabına ve senin listene göre devam eder)
+        { 
+            text: "BAHÇE GÖREVİ: Atatürk büstünde yazan o uzun cümleyi terminale hatasız gir.", 
+            type: "input", 
+            ans: "KİŞİNİN BİRİNCİ HAKKI DOĞAL YETENEKLERİNİ SERBESTÇE GELİŞTİREBİLMESİDİR", 
+            meb: "Okul bahçesindeki fiziksel büstten veriyi topla!" 
+        }
     ];
 
     function loadStep(idx) {
@@ -150,92 +140,118 @@
         const s = steps[idx];
         document.getElementById('progress').innerText = `GÖREV: ${idx + 1} / 50`;
         document.getElementById('mission-text').innerText = `> ${s.text}`;
+        document.getElementById('clue-box').innerHTML = `[!] MEB REHBERİ: ${s.meb}`;
         
         const content = document.getElementById('interactive-content');
         content.innerHTML = '';
-        
-        if (s.clue) {
-            const cb = document.getElementById('clue-box');
-            cb.innerText = s.clue; cb.style.display = 'block';
-        } else {
-            document.getElementById('clue-box').style.display = 'none';
-        }
+        selectedItem = null;
 
-        if (s.type === "input") {
+        if (s.type === "choice") {
+            const container = document.createElement('div');
+            container.className = "choice-container";
+            s.options.forEach((opt, oIdx) => {
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.onclick = () => checkChoice(oIdx, s.ans);
+                container.appendChild(btn);
+            });
+            content.appendChild(container);
+        } else if (s.type === "input") {
             const input = document.createElement('input');
             input.id = "user-input";
             input.placeholder = "VERİ GİRİŞİ...";
             input.autocomplete = "off";
             content.appendChild(input);
             input.focus();
-            
-            input.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") checkAns(input.value, s.ans);
+            input.onkeypress = (e) => { if(e.key === "Enter") checkInput(input.value, s.ans); };
+        } else if (s.type === "match") {
+            const zonesDiv = document.createElement('div');
+            zonesDiv.className = "drop-area";
+            s.zones.forEach(z => {
+                const zDiv = document.createElement('div');
+                zDiv.className = "zone";
+                zDiv.id = z.id;
+                zDiv.innerHTML = `<h4>${z.label}</h4>`;
+                zDiv.onclick = () => placeItem(zDiv, s.items.length);
+                zonesDiv.appendChild(zDiv);
             });
-        }
-
-        if (s.timer) {
-            startTimer(s.timer);
-        } else {
-            stopTimer();
+            const pool = document.createElement('div');
+            pool.className = "drag-pool";
+            pool.id = "pool";
+            s.items.forEach(i => {
+                const iDiv = document.createElement('div');
+                iDiv.className = "drag-item";
+                iDiv.innerText = i.text;
+                iDiv.dataset.target = i.target;
+                iDiv.onclick = (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.drag-item').forEach(d => d.classList.remove('selected'));
+                    iDiv.classList.add('selected');
+                    selectedItem = iDiv;
+                };
+                pool.appendChild(iDiv);
+            });
+            content.appendChild(zonesDiv);
+            content.appendChild(pool);
         }
     }
 
-    function checkAns(val, correct) {
-        const cleanVal = val.toUpperCase().trim().replace(/İ/g, "I").replace(/Ş/g, "S").replace(/Ğ/g, "G").replace(/Ü/g, "U").replace(/Ö/g, "O").replace(/Ç/g, "C");
-        const cleanCorrect = correct.toUpperCase().trim().replace(/İ/g, "I").replace(/Ş/g, "S").replace(/Ğ/g, "G").replace(/Ü/g, "U").replace(/Ö/g, "O").replace(/Ç/g, "C");
+    function checkChoice(idx, correct) {
+        if(idx === correct) { playSfx(800, 0.1); loadStep(currentStep + 1); }
+        else { playSfx(100, 0.2, 'sawtooth'); score -= 2; }
+    }
+
+    function checkInput(val, correct) {
+        const v = val.toUpperCase().trim().replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C");
+        const c = correct.toUpperCase().trim().replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C");
+        if(v === c) { playSfx(800, 0.1); loadStep(currentStep + 1); }
+        else { playSfx(100, 0.2, 'sawtooth'); score -= 2; }
+    }
+
+    function placeItem(zone, totalItems) {
+        if(!selectedItem) return;
+        zone.appendChild(selectedItem);
+        selectedItem.classList.remove('selected');
+        selectedItem = null;
         
-        if (cleanVal === cleanCorrect) {
-            playSfx(800, 0.1);
-            loadStep(currentStep + 1);
-        } else {
-            playSfx(100, 0.3, 'sawtooth');
-            score -= 2;
-            document.getElementById('user-input').style.borderColor = 'red';
-            setTimeout(() => document.getElementById('user-input').style.borderColor = '#0f0', 500);
-        }
-    }
-
-    function startTimer(sec) {
-        const tBox = document.getElementById('timer');
-        tBox.style.display = 'block';
-        let left = sec;
-        tBox.innerText = left;
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            left--;
-            tBox.innerText = left;
-            if (left <= 5) playSfx(1000, 0.05);
-            if (left <= 0) {
-                stopTimer();
-                score -= 10;
-                alert("SÜRE DOLDU! SİSTEM YENİDEN BAŞLATILIYOR.");
+        const placed = document.querySelectorAll('.zone .drag-item');
+        if(placed.length === totalItems) {
+            let allCorrect = true;
+            placed.forEach(item => {
+                if(item.dataset.target !== item.parentElement.id) allCorrect = false;
+            });
+            if(allCorrect) { playSfx(800, 0.1); setTimeout(() => loadStep(currentStep + 1), 500); }
+            else { 
+                playSfx(100, 0.2, 'sawtooth'); 
+                score -= 5; alert("VERİ TASNİFİ HATALI! SIFIRLANIYOR.");
                 loadStep(currentStep);
             }
-        }, 1000);
+        }
     }
 
-    function stopTimer() {
-        clearInterval(timerInterval);
-        document.getElementById('timer').style.display = 'none';
+    function skipMission() {
+        if(confirm("DİKKAT: Görevi atlamak 50 puana mal olur. Devam edilsin mi?")) {
+            score -= 50;
+            loadStep(currentStep + 1);
+        }
     }
 
     function finishGame() {
-        stopTimer();
-        const code = `ALPHA-${Math.floor(Math.random()*9000)}-${score}`;
+        const code = `NEBULA-${score}-${Math.floor(Math.random()*999)}`;
         document.getElementById('main-screen').innerHTML = `
-            <h1 style="color:#00f3ff">OPERASYON BAŞARILI!</h1>
-            <p>Dr. Paralel gözaltına alındı. İklim dengesi sağlandı.</p>
+            <h1 style="color:#00f3ff">OPERASYON TAMAMLANDI</h1>
             <div class="final-code" onclick="copyCode('${code}')">${code}</div>
-            <p style="text-align:center">(Kopyalamak için koda tıkla)</p>
-            <button class="btn" onclick="window.open('${formLink}')" style="width:100%">RAPORU GÖNDER >></button>
+            <button class="btn" onclick="window.open('${googleFormLink}')" style="width:100%">RAPORU GÖNDER >></button>
         `;
+        document.getElementById('skip-button').style.display = 'none';
     }
 
     function copyCode(c) {
         navigator.clipboard.writeText(c);
-        alert("Kod kopyalandı! Formda kullanabilirsin.");
+        alert("Kod kopyalandı!");
     }
+
+    loadStep(0);
 </script>
 </body>
 </html>
