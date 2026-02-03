@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEO-HACK: İKLİM KAOSU V3.0</title>
+    <title>GEO-HACK: SOĞUK SAVAŞ V3.1</title>
     <style>
         /* CSS: Taktiksel Hacker Arayüzü */
         body {
@@ -55,7 +55,7 @@
 
         #scene-image {
             width: 100%;
-            height: 180px;
+            height: 160px;
             object-fit: cover;
             border: 1px solid #00ff41;
             margin-bottom: 15px;
@@ -67,26 +67,28 @@
         .code-box { border: 2px dashed #00f3ff; background: #001111; color: #00f3ff; padding: 10px; text-align: center; font-size: 20px; font-weight: bold; margin: 10px 0; letter-spacing: 2px; cursor: pointer; }
         .clue-box { border-left: 3px solid #00f3ff; background: rgba(0, 243, 255, 0.1); padding: 10px; margin: 10px 0; color: #00f3ff; font-size: 14px; }
         
-        /* TABLO STİLİ (Yeni Soru Tipi İçin) */
+        /* TABLO STİLİ */
+        .table-container { overflow-x: auto; margin-bottom: 15px; border: 1px solid #333; }
         .data-table {
-            width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; color: #eee;
+            width: 100%; border-collapse: collapse; font-size: 11px; color: #eee; min-width: 300px;
         }
-        .data-table th, .data-table td { border: 1px solid #333; padding: 5px; text-align: center; }
-        .data-table th { background: #111; color: #00ff41; }
-        .highlight-cell { background: #003300; font-weight: bold; }
+        .data-table th, .data-table td { border: 1px solid #444; padding: 6px; text-align: center; }
+        .data-table th { background: #111; color: #00ff41; font-weight: bold; }
+        .data-table tr:nth-child(even) { background: #0a0a0a; }
+        .data-table td:hover { background: #003300; cursor: crosshair; }
 
-        /* GİRİŞ ALANI STİLİ */
+        /* GİRİŞ ALANI */
         .input-area { display: flex; gap: 10px; margin-top: 15px; }
         #player-input { flex-grow: 1; background: #001100; border: 1px solid #00ff41; color: #00ff41; padding: 10px; font-family: inherit; font-size: 16px; text-transform: uppercase; }
         
-        /* SÜRÜKLE-BIRAK STİLLERİ */
+        /* SÜRÜKLE-BIRAK */
         .drag-container { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
         .items-pool { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; padding: 10px; border: 1px dashed #333; min-height: 50px; }
-        .draggable-item { background: #003300; border: 1px solid #00ff41; color: #00ff41; padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .draggable-item { background: #003300; border: 1px solid #00ff41; color: #00ff41; padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         .draggable-item.selected { background: #00ff41; color: #000; transform: scale(1.1); }
         .drop-zones-area { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .drop-zone { border: 2px solid #555; background: #111; padding: 10px; min-height: 80px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .drop-zone h4 { margin: 0 0 10px 0; color: #aaa; font-size: 12px; text-transform: uppercase; }
+        .drop-zone h4 { margin: 0 0 10px 0; color: #aaa; font-size: 11px; text-transform: uppercase; }
         .drop-zone.active-zone { border-color: #00ff41; background: #002200; }
 
         .control-panel { padding: 15px; background: #111; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -108,10 +110,11 @@
         </div>
 
         <div class="main-screen" id="main-screen">
-            <img id="scene-image" src="https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800" alt="Scene">
+            <img id="scene-image" src="https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800" alt="Scene">
             <div id="game-text" class="log-text"></div>
             
-            <div id="custom-content-area"></div> <div id="input-container"></div> 
+            <div id="custom-content-area"></div>
+            <div id="input-container"></div> 
             <div id="drag-game-area"></div>
             
             <div id="clue-area"></div>
@@ -132,71 +135,91 @@
         const scenario = [
             {
                 id: 0,
-                location: "KUZEY KUTUP DAİRESİ",
-                image: "https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef?w=800",
-                text: "Ajan! Dr. Paralel, atmosferin dengesini bozdu. Kuzeyde mahsur kalan bir araştırma ekibi var. Onları kurtarmak için 'Hissedilen Sıcaklığı' doğru hesaplamalısın.<br><br>Cihazlar şunu gösteriyor:<br><b>Hava Sıcaklığı: -10°C</b><br><b>Rüzgar Hızı: 20 km/sa</b><br><br>Aşağıdaki tabloya bak ve ekibin hissettiği gerçek sıcaklığı sisteme gir.",
-                clue: "TABLOYU OKU: -10 satırı ile 20 sütununun kesiştiği sayıyı bul.",
-                type: "input_table", // Tablolu Input Sorusu
-                correctAnswer: "-23",
+                location: "KUZEY KUTBU İSTASYONU",
+                image: "https://images.unsplash.com/photo-1548266652-99cf27701ced?w=800",
+                text: "Ajan! Dr. Paralel, iklim verilerini kilitledi. Sisteme girmek için 'Hissedilen Sıcaklık' tablosunu kullanmalısın.<br><br>GÜVENLİK SORUSU:<br>Hava <b>-5°C</b> iken, rüzgar hızı <b>20 km/sa</b> ise hissedilen sıcaklık nedir?<br><br>Tabloda satır ve sütunu kesiştir, değeri bul.",
+                clue: "İPUCU: Üstten -5'i, soldan 20'yi bul ve birleştikleri kutuya bak.",
+                type: "input_table", 
+                correctAnswer: "-16",
                 targetCorrect: 1,
-                targetWrong: "wrong_table"
+                targetWrong: "wrong_table_1"
             },
             {
-                id: "wrong_table",
+                id: "wrong_table_1",
                 type: "dead_end",
-                image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800",
-                text: "HATALI HESAPLAMA! Ekip donuyor. Tabloda -10°C satırını bul, sağa doğru git ve 20 km/sa sütunu ile kesiştir.",
-                choices: [{ text: "TEKRAR DENE", target: 0, cost: 10 }]
+                image: "https://images.unsplash.com/photo-1605130284535-11dd9eedc58a?w=800",
+                text: "ERİŞİM REDDEDİLDİ! Tabloyu yanlış okudun.<br>Tabloda 'Sıcaklık -5' sütunundan aşağı in, 'Rüzgar 20' satırından sağa git.",
+                choices: [{ text: "TEKRAR DENE", target: 0, cost: 5 }]
             },
             {
                 id: 1,
-                location: "ALP DAĞLARI",
-                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
-                text: "Şifre Doğru (-23). Ekip kurtarıldı!<br><br>Şimdi Alp Dağları'ndayız. Dr. Paralel küresel sıcaklığı 2°C artırdı. Dağdaki nadir 'Kardelen' ve 'Menekşe' çiçekleri sıcaktan ölüyor.<br><br>Onları kurtarmak için nereye taşımalıyız?",
-                clue: "ANALİZ: Sıcaklık artarsa, soğuk seven bitkiler serinlemek için nereye göç eder?",
+                location: "TAHLİYE ROTASI",
+                image: "https://images.unsplash.com/photo-1517299321609-52687d1bc55a?w=800",
+                text: "Şifre Doğru (-16). Şimdi ekibi tahliye etmelisin. İki farklı tünel var. Ekibin donmaması için <b>DAHA SICAK (Daha yüksek değerli)</b> olan tüneli seçmelisin.<br><br>1. TÜNEL: Hava 0°C, Rüzgar 30 km/sa<br>2. TÜNEL: Hava 5°C, Rüzgar 40 km/sa<br><br>Tablodan iki değeri de bul, sıcak olanı seç!",
+                clue: "ANALİZ: Tablodan iki kesişimi de bul. Hangisi sayı doğrusunda daha sağda (büyük)?",
+                type: "choice_table",
                 choices: [
-                    { text: "DAĞIN ETEĞİNE (AŞAĞI)", target: "wrong_altitude", cost: 10 },
-                    { text: "DAĞIN ZİRVESİNE (YUKARI)", target: 2, cost: 0 },
-                    { text: "ORMANIN İÇİNE (AYNI YER)", target: "wrong_altitude", cost: 5 }
+                    { text: "1. TÜNELİ SEÇ", target: "wrong_tunnel", cost: 10 }, // 0 ve 30 -> -13
+                    { text: "2. TÜNELİ SEÇ", target: 2, cost: 0 }  // 5 ve 40 -> -4 (Bu daha sıcak)
                 ]
             },
             {
-                id: "wrong_altitude",
+                id: "wrong_tunnel",
                 type: "dead_end",
-                image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800",
-                text: "YANLIŞ HAMLE! Aşağılar daha sıcaktır. Bitkiler kavruldu. Soğuk seven bitkiler, iklim ısınırsa daha serin olan YÜKSEKLERE kaçar.",
-                choices: [{ text: "ZAMANI GERİ AL", target: 1, cost: 5 }]
+                image: "https://images.unsplash.com/photo-1457195740896-7f345efef228?w=800",
+                text: "YANLIŞ SEÇİM! Ekip donma tehlikesi geçirdi.<br>1. Tünel (0°C/30km) tabloda <b>-13°C</b>.<br>2. Tünel (5°C/40km) tabloda <b>-4°C</b>.<br>-4, -13'ten daha sıcaktır!",
+                choices: [{ text: "GERİ DÖN", target: 1, cost: 5 }]
             },
             {
                 id: 2,
-                location: "AFET KONTROL MERKEZİ",
-                image: "https://images.unsplash.com/photo-1454789476662-53eb23ba5907?w=800",
-                text: "Harika! Bitkiler yüksekte güvende. <br>Son Görev: Dr. Paralel 'İklim Silahı' ile afetler yaratıyor. Hangilerinin İklim Değişikliği (Atmosferik) kaynaklı olduğunu tespit etmelisin.<br><br>Verileri doğru kutulara ayır. (Jeolojik olanlar Dr. Paralel'in suçu değil).",
+                location: "DRONE KONTROLÜ",
+                image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800",
+                text: "Ekip kurtuldu. Şimdi Dr. Paralel'in yerini tespit eden Drone'u uçuracağız. <br>Ancak Drone bataryası <b>-25°C ve altında</b> donuyor.<br><br>Şu an hava sıcaklığı <b>-10°C</b>. Aşağıdaki rüzgar hızlarından hangisinde uçurursak Drone DONAR (Düşer)?",
+                clue: "ANALİZ: Tabloda -10°C sütununa bak. Hangi rüzgar hızında değer -25'ten daha soğuk (küçük) oluyor?",
+                type: "choice_table",
+                choices: [
+                    { text: "RÜZGAR: 10 km/sa", target: "wrong_drone", cost: 5 }, // -14 (Güvenli)
+                    { text: "RÜZGAR: 20 km/sa", target: "wrong_drone", cost: 5 }, // -23 (Güvenli)
+                    { text: "RÜZGAR: 30 km/sa", target: 3, cost: 0 }  // -27 (TEHLİKELİ!)
+                ]
+            },
+            {
+                id: "wrong_drone",
+                type: "dead_end",
+                image: "https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?w=800",
+                text: "YANLIŞ TAHMİN! Bu rüzgar hızında sıcaklık -25'in üzerinde (daha sıcak), drone çalışır. Biz drone'un DONACAĞI hızı arıyoruz.",
+                choices: [{ text: "TEKRAR HESAPLA", target: 2, cost: 5 }]
+            },
+            {
+                id: 3,
+                location: "AFET ANALİZ MERKEZİ",
+                image: "https://images.unsplash.com/photo-1604179780016-2a22b7a2d48c?w=800",
+                text: "Mükemmel analiz! Drone, Dr. Paralel'in yerini buldu. İklim silahıyla 'Küresel Isınma'yı tetikleyip afetler yaratıyor.<br><br>Son görev: Aşağıdaki afetleri sınıflandır. Hangileri Küresel Isınma (Sıcaklık Artışı) ile doğrudan artar, hangileri Jeolojiktir?",
                 type: "drag_match",
                 targetCorrect: 99,
                 items: [
                     { id: "i1", text: "Orman Yangını", type: "iklim" },
-                    { id: "i2", text: "Tsunami", type: "jeolojik" },
-                    { id: "i3", text: "Fırtına/Sel", type: "iklim" },
-                    { id: "i4", text: "Volkan Patlaması", type: "jeolojik" },
+                    { id: "i2", text: "Deprem", type: "jeolojik" },
+                    { id: "i3", text: "Şiddetli Kasırga", type: "iklim" },
+                    { id: "i4", text: "Tsunami", type: "jeolojik" },
                     { id: "i5", text: "Kuraklık", type: "iklim" }
                 ],
                 zones: [
-                    { id: "iklim", label: "İKLİM DEĞİŞİKLİĞİ ETKİSİ" },
-                    { id: "jeolojik", label: "JEOLOJİK (İKLİMLE ALAKASIZ)" }
+                    { id: "iklim", label: "KÜRESEL ISINMA ETKİSİ" },
+                    { id: "jeolojik", label: "JEOLOJİK (ALAKASIZ)" }
                 ]
             },
             {
                 id: 99,
                 location: "GÖREV BAŞARILI",
                 image: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800",
-                text: "MÜKEMMEL! İklim silahını devre dışı bıraktın. Dr. Paralel'in planları suya düştü.<br><br>Kodunu al ve raporunu gönder.",
+                text: "MÜKEMMEL! İklim silahını durdurdun.<br><br>Bu operasyonla şunları kanıtladın:<br>1. Rüzgar arttıkça hissedilen sıcaklık düşer.<br>2. Küresel ısınma meteorolojik afetleri artırır.<br><br>Kodunu al ve raporu gönder.",
                 isEnd: true,
                 choices: []
             }
         ];
 
-        // --- OYUN MOTORU ---
+        // --- MOTOR ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -239,32 +262,32 @@
             setTimeout(() => { image.src = scene.image; image.style.opacity = 1; }, 200);
             text.innerHTML = scene.text;
 
-            // --- TÜR KONTROLLERİ ---
-            
-            // 1. TABLO OKUMA SORUSU (PDF'teki tabloyu HTML ile çiziyoruz)
-            if (scene.type === "input_table") {
+            // --- TABLOYU GEREKEN YERLERDE ÇİZ ---
+            if (scene.type === "input_table" || scene.type === "choice_table") {
+                // PDF'deki tablo verileri
                 customArea.innerHTML = `
+                <div class="table-container">
                 <table class="data-table">
-                    <tr><th>Rüzgar \\ Sıcaklık</th><th>0°C</th><th>-5°C</th><th>-10°C</th><th>-15°C</th></tr>
-                    <tr><th>10 km/sa</th><td>-3</td><td>-9</td><td>-14</td><td>-20</td></tr>
-                    <tr><th>20 km/sa</th><td>-5</td><td>-12</td><td class="highlight-cell">?</td><td>-26</td></tr>
-                    <tr><th>30 km/sa</th><td>-8</td><td>-15</td><td>-25</td><td>-32</td></tr>
-                </table>`;
-                
+                    <tr><th>Rüzgar \\ Sıcaklık</th><th>5°C</th><th>0°C</th><th>-5°C</th><th>-10°C</th><th>-15°C</th></tr>
+                    <tr><th>Sakin</th><td>5</td><td>0</td><td>-5</td><td>-10</td><td>-15</td></tr>
+                    <tr><th>10 km/sa</th><td>2</td><td>-3</td><td>-9</td><td>-14</td><td>-20</td></tr>
+                    <tr><th>20 km/sa</th><td>-3</td><td>-10</td><td>-16</td><td>-23</td><td>-29</td></tr>
+                    <tr><th>30 km/sa</th><td>-6</td><td>-13</td><td>-20</td><td>-27</td><td>-34</td></tr>
+                    <tr><th>40 km/sa</th><td>-4</td><td>-15</td><td>-22</td><td>-29</td><td>-36</td></tr>
+                </table>
+                </div>`;
+            }
+
+            // --- TÜR KONTROLLERİ ---
+            if (scene.type === "input_table") {
                 inputContainer.innerHTML = `
                     <div class="input-area">
-                        <input type="text" id="player-input" placeholder="DEĞERİ GİR..." autocomplete="off">
+                        <input type="text" id="player-input" placeholder="DEĞERİ YAZ..." autocomplete="off">
                         <button onclick="checkInput('${scene.correctAnswer}', ${scene.targetCorrect}, '${scene.targetWrong}')">GÖNDER</button>
                     </div>`;
-            }
-            
-            // 2. SÜRÜKLE BIRAK
-            else if (scene.type === "drag_match") {
+            } else if (scene.type === "drag_match") {
                 renderDragGame(scene);
-            }
-            
-            // 3. NORMAL ve BİTİŞ
-            else if (scene.isEnd) {
+            } else if (scene.isEnd) {
                 const code = generateMissionCode(score);
                 text.innerHTML += `<div class="code-box" onclick="copyCode(this)">${code}</div><div style="text-align:center; font-size:12px; color:#aaa">(Kopyalamak için tıkla)</div>`;
                 controls.innerHTML = `<button onclick="window.open('${googleFormLink}', '_blank')" class="btn-full" style="color:#00f3ff; border-color:#00f3ff">>> RAPORU GÖNDER</button>
@@ -286,7 +309,7 @@
             }
         }
 
-        // --- SÜRÜKLE BIRAK MANTIĞI ---
+        // --- SÜRÜKLE BIRAK MOTORU ---
         function renderDragGame(scene) {
             const dragArea = document.getElementById("drag-game-area");
             selectedItem = null;
