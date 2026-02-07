@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV: DR. PARALEL'İN İZİNDE V11.4</title>
+    <title>AV: DR. PARALEL'İN İZİNDE V11.5</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'VT323', monospace; overflow: hidden; }
@@ -28,116 +28,119 @@
     </style>
 </head>
 <body>
-<div class="scanlines"></div>
-<div id="start-overlay">
-    <h1 style="font-size: 50px; color: #f00;">DR. PARALEL KAÇIYOR!</h1>
-    <p style="font-size: 24px;">Dünyanın iklim ayarlarını bozdu ve siber boşluğa kaçtı.<br>Onu yakalamak için bıraktığı iklim şifrelerini çözmelisin.</p>
-    <button onclick="startChase()" style="font-size: 35px; padding: 15px 50px;">AV BAŞLASIN</button>
-</div>
-
-<div id="terminal">
-    <div id="chase-status">
-        <span>AJAN ENKA</span>
-        <div class="distance-bar"><div id="player-icon">🕵️</div><div id="dr-icon">😈</div></div>
-        <span id="dist-text">Mesafe: 100 km</span>
+    <div class="scanlines"></div>
+    <div id="start-overlay">
+        <h1 style="font-size: 50px; color: #f00;">DR. PARALEL KAÇIYOR!</h1>
+        <p style="font-size: 24px;">Dünyanın iklim ayarlarını bozdu ve siber boşluğa kaçtı.<br>Onu yakalamak için bıraktığı iklim şifrelerini çözmelisin.</p>
+        <button onclick="startChase()" style="font-size: 35px; padding: 15px 50px;">AV BAŞLASIN</button>
     </div>
-    <div class="screen">
-        <div id="dr-msg" class="dr-message"></div>
-        <div id="mission-text" class="mission-log"></div>
-        <div id="clue-box" class="clue-box" style="display:none;"></div>
-        <div id="interactive-area" class="action-zone"></div>
-        <button id="skip-btn" class="skip-btn" onclick="letDrEscape()">[!] DR. PARALEL KAÇAR (-50 KM)</button>
+
+    <div id="terminal">
+        <div id="chase-status">
+            <span>AJAN ENKA</span>
+            <div class="distance-bar"><div id="player-icon">🕵️</div><div id="dr-icon">😈</div></div>
+            <span id="dist-text">Mesafe: 100 km</span>
+        </div>
+        <div class="screen">
+            <div id="dr-msg" class="dr-message"></div>
+            <div id="mission-text" class="mission-log"></div>
+            <div id="clue-box" class="clue-box" style="display:none;"></div>
+            <div id="interactive-area" class="action-zone"></div>
+            <button id="skip-btn" class="skip-btn" onclick="letDrEscape()">[!] DR. PARALEL KAÇAR (-50 KM)</button>
+        </div>
     </div>
-</div>
 
-<script>
-    let currentStep = 0;
-    let distance = 100;
+    <script>
+        let currentStep = 0;
+        let distance = 100;
 
-    // TÜRKÇE KARAKTER TEMİZLEME MOTORU
-    function normalizeT(s) {
-        if(!s) return "";
-        return s.toUpperCase().replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C").replace(/\s+/g, '').trim();
-    }
-
-    const tasks = [
-        { dr: "Hava yarın yağmurlu olacak dedim, sistem çöktü! Hahaha!", text: "O anki anlık durumun gerçek adını sisteme gir.", ans: "DURUMU", type: "input", meb: "" },
-        { 
-            dr: "Atmosfer ve hidrosfer dışında hiçbir şey bırakmadım!", 
-            text: "Eksik 3 bileşeni BÜYÜK HARFLE, aralarına virgül ve bir boşluk koyarak gir. (Sıralama önemli değil!)", 
-            ans: ["KRİYOSFER", "LİTOSFER", "BİYOSFER"], 
-            type: "input_match_all", 
-            meb: "MEB Kitabı Sayfa 91" 
-        },
-        { dr: "Kuzey Yarım Küre'de yollarını bulamayacaksın!", text: "Kuzey Yarım Küre'de okyanus akıntıları hangi yöne sapar?", ans: "SAĞ", type: "choice", opts: ["SAĞ", "SOL"], meb: "Sayfa 100" },
-        { dr: "Buzulların yansıtma gücünü sıfıra indirdim!", text: "Beyaz yüzeylerin güneş ışığını yansıtma gücüne ne denir?", ans: "ALBEDO", type: "input", meb: "Sayfa 93" },
-        { dr: "Atmosferin kalbine sızdım!", text: "Su buharının tamamının bulunduğu tabaka hangisidir?", ans: "TROPOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Ozon gazını seyreltiyorum!", text: "Ozon gazının bulunduğu katman hangisidir?", ans: "STRATOSFER", type: "choice", opts: ["STRATOSFER", "MEZOSFER"], meb: "Sayfa 94" },
-        { dr: "Uçağımın arkasındaki alevleri gördün mü?", text: "Gök taşlarının parçalandığı katman hangisidir?", ans: "MEZOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Aurora ışıklarını söndüreceğim!", text: "Kutup ışıklarının görüldüğü katmanı onar.", ans: "TERMOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Sınırın dışına çıkıyorum!", text: "Atmosferin en dış katmanı hangisidir?", ans: "EKZOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Hava aniden soğudu değil mi?", text: "İnsanlar mont giymeye başladıysa Dr. Paralel nereye gitmiştir?", ans: "KUZEYE", type: "choice", opts: ["KUZEYE", "GÜNEYE"], meb: "Sayfa 96" }
-    ];
-
-    function startChase() {
-        document.getElementById('start-overlay').style.display = 'none';
-        loadScene(0);
-    }
-
-    function loadScene(idx) {
-        if (idx >= tasks.length) { 
-            alert("TEBRİKLER! İLK BÖLÜMÜ GEÇTİN. 11. SORU İÇİN SAYFA NUMARASINI BEKLİYORUM."); 
-            return; 
+        function normalizeT(s) {
+            if(!s) return "";
+            return s.toUpperCase().replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C").replace(/\s+/g, '').trim();
         }
-        const task = tasks[idx];
-        document.getElementById('dr-msg').innerText = `DR. PARALEL: "${task.dr}"`;
-        document.getElementById('mission-text').innerHTML = `> GÖREV: ${task.text}`;
-        const cb = document.getElementById('clue-box');
-        if(task.meb) { cb.innerHTML = `[!] MEB REHBERİ: ${task.meb}`; cb.style.display = 'block'; } else { cb.style.display = 'none'; }
-        
-        const area = document.getElementById('interactive-area');
-        area.innerHTML = '';
 
-        if (task.type === "choice") {
-            const r = document.createElement('div'); r.className = "choice-row";
-            task.opts.forEach(o => { 
-                const b = document.createElement('button'); b.innerText = o; 
-                b.onclick = () => check(o); r.appendChild(b); 
-            });
-            area.appendChild(r);
-        } else {
-            const inp = document.createElement('input'); inp.id = "u-ans"; inp.placeholder = "KOMUT...";
-            const btn = document.createElement('button'); btn.innerText = "GÖNDER"; btn.className = "send-btn";
-            btn.onclick = () => check(inp.value);
-            area.appendChild(inp); area.appendChild(btn);
-            inp.focus();
-            inp.onkeypress = (e) => { if(e.key === "Enter") check(inp.value); };
+        const tasks = [
+            { dr: "Hava yarın yağmurlu olacak dedim, sistem çöktü! Hahaha!", text: "O anki anlık durumun gerçek adını sisteme gir.", ans: "DURUMU", type: "input", meb: "" },
+            { 
+                dr: "Atmosfer ve hidrosfer dışında hiçbir şey bırakmadım!", 
+                text: "Eksik 3 bileşeni BÜYÜK HARFLE, aralarına virgül ve bir boşluk koyarak gir. (Sıralama önemli değil!)", 
+                ans: ["KRİYOSFER", "LİTOSFER", "BİYOSFER"], 
+                type: "input_match_all", 
+                meb: "MEB Kitabı Sayfa 91" 
+            },
+            { dr: "Kuzey Yarım Küre'de yollarını bulamayacaksın!", text: "Kuzey Yarım Küre'de okyanus akıntıları hangi yöne sapar?", ans: "SAĞ", type: "choice", opts: ["SAĞ", "SOL"], meb: "Sayfa 100" },
+            { dr: "Buzulların yansıtma gücünü sıfıra indirdim!", text: "Beyaz yüzeylerin güneş ışığını yansıtma gücü tehlikede. Bu gücün ismini gir.", ans: "ALBEDO", type: "input", meb: "Sayfa 93" },
+            { dr: "Atmosferin kalbine sızdım!", text: "Su buharının tamamının bulunduğu tabaka hangisidir?", ans: "TROPOSFER", type: "input", meb: "Sayfa 94" },
+            { dr: "Ozon gazını seyreltiyorum!", text: "Ozon gazının bulunduğu katman hangisidir?", ans: "STRATOSFER", type: "choice", opts: ["STRATOSFER", "MEZOSFER"], meb: "Sayfa 94" },
+            { dr: "Uçağımın arkasındaki alevleri gördün mü?", text: "Gök taşlarının parçalandığı katman hangisidir?", ans: "MEZOSFER", type: "input", meb: "Sayfa 94" },
+            { dr: "Aurora ışıklarını söndüreceğim!", text: "Kutup ışıklarının görüldüğü katmanı onar.", ans: "TERMOSFER", type: "input", meb: "Sayfa 94" },
+            { dr: "Sınırın dışına çıkıyorum!", text: "Atmosferin en dış katmanı hangisidir?", ans: "EKZOSFER", type: "input", meb: "Sayfa 94" },
+            { dr: "Hava aniden soğudu değil mi?", text: "İnsanlar mont giymeye başladıysa Dr. Paralel nereye gitmiştir?", ans: "KUZEYE", type: "choice", opts: ["KUZEYE", "GÜNEYE"], meb: "Sayfa 96" }
+        ];
+
+        function startChase() {
+            document.getElementById('start-overlay').style.display = 'none';
+            loadScene(0);
         }
-        updateDist();
-    }
 
-    function check(v) {
-        const task = tasks[currentStep];
-        
-        if (task.type === "input_match_all") {
-            const userWords = v.split(',').map(w => normalizeT(w));
-            const correctWords = task.ans.map(w => normalizeT(w));
-            const isCorrect = correctWords.length === userWords.length && correctWords.every(w => userWords.includes(w));
+        function loadScene(idx) {
+            if (idx >= tasks.length) { 
+                document.getElementById('dr-msg').innerText = "DR. PARALEL: 'Seni şimdilik atlattım ama döneceğim!'";
+                document.getElementById('mission-text').innerText = "TEBRİKLER! İLK BÖLÜMÜ GEÇTİN. 11. SORU İÇİN SAYFA NUMARALARI BEKLENİYOR.";
+                document.getElementById('interactive-area').innerHTML = "";
+                return; 
+            }
+            const task = tasks[idx];
+            document.getElementById('dr-msg').innerText = `DR. PARALEL: "${task.dr}"`;
+            document.getElementById('mission-text').innerHTML = `> GÖREV: ${task.text}`;
+            const cb = document.getElementById('clue-box');
+            if(task.meb) { cb.innerHTML = `[!] MEB REHBERİ: ${task.meb}`; cb.style.display = 'block'; } else { cb.style.display = 'none'; }
             
-            if (isCorrect) { distance -= 10; currentStep++; loadScene(currentStep); }
-            else { distance += 15; alert("YANLIŞ! Dr. Paralel kaçıyor!"); updateDist(); }
-        } else {
-            if(normalizeT(v) === normalizeT(task.ans)) { distance -= 10; currentStep++; loadScene(currentStep); }
-            else { distance += 15; alert("YANLIŞ! Dr. Paralel kaçıyor!"); updateDist(); }
-        }
-    }
+            const area = document.getElementById('interactive-area');
+            area.innerHTML = '';
 
-    function letDrEscape() { distance += 50; currentStep++; loadScene(currentStep); }
-    function updateDist() {
-        const p = 100 - (distance > 100 ? 100 : distance);
-        document.getElementById('player-icon').style.left = p + "%";
-        document.getElementById('dist-text').innerText = `Mesafe: ${distance} km`;
-    }
-</script>
+            if (task.type === "choice") {
+                const r = document.createElement('div'); r.className = "choice-row";
+                task.opts.forEach(o => { 
+                    const b = document.createElement('button'); b.innerText = o; 
+                    b.onclick = () => check(o); r.appendChild(b); 
+                });
+                area.appendChild(r);
+            } else {
+                const group = document.createElement('div');
+                const inp = document.createElement('input'); inp.id = "u-ans"; inp.placeholder = "KOMUT...";
+                const btn = document.createElement('button'); btn.innerText = "GÖNDER"; btn.className = "send-btn";
+                btn.onclick = () => check(inp.value);
+                group.appendChild(inp); group.appendChild(btn);
+                area.appendChild(group);
+                inp.focus();
+                inp.onkeypress = (e) => { if(e.key === "Enter") check(inp.value); };
+            }
+            updateDist();
+        }
+
+        function check(v) {
+            const task = tasks[currentStep];
+            if (task.type === "input_match_all") {
+                const userWords = v.split(',').map(w => normalizeT(w));
+                const correctWords = task.ans.map(w => normalizeT(w));
+                const isCorrect = correctWords.length === userWords.length && correctWords.every(w => userWords.includes(w));
+                if (isCorrect) { distance -= 10; currentStep++; loadScene(currentStep); }
+                else { distance += 15; alert("YANLIŞ! Eksik veya hatalı bileşen. Dr. Paralel uzaklaşıyor!"); updateDist(); }
+            } else {
+                if(normalizeT(v) === normalizeT(task.ans)) { distance -= 10; currentStep++; loadScene(currentStep); }
+                else { distance += 15; alert("YANLIŞ! Dr. Paralel kaçıyor!"); updateDist(); }
+            }
+        }
+
+        function letDrEscape() { distance += 50; currentStep++; loadScene(currentStep); }
+
+        function updateDist() {
+            if(distance < 5) distance = 5;
+            const p = 100 - (distance > 100 ? 100 : distance);
+            document.getElementById('player-icon').style.left = p + "%";
+            document.getElementById('dist-text').innerText = `Mesafe: ${distance} km`;
+        }
+    </script>
 </body>
 </html>
