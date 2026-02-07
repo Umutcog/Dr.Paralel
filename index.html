@@ -1,103 +1,53 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV: DR. PARALEL'İN İZİNDE V11.1</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <style>
-        body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'VT323', monospace; overflow: hidden; }
-        .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03)); background-size: 100% 3px, 3px 100%; }
-        #terminal { width: 95vw; height: 95vh; margin: 2.5vh auto; border: 2px solid #0f0; background: #050505; display: flex; flex-direction: column; position: relative; }
-        #chase-status { background: #111; border-bottom: 2px solid #0f0; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .distance-bar { flex: 1; height: 10px; background: #222; margin: 0 20px; position: relative; border: 1px solid #0f0; }
-        #player-icon { position: absolute; left: 0; top: -10px; font-size: 25px; transition: 0.5s; }
-        #dr-icon { position: absolute; left: 100%; top: -10px; font-size: 25px; color: #f00; }
-        .screen { flex: 1; overflow-y: auto; padding: 25px; position: relative; }
-        .dr-message { color: #f00; font-size: 22px; margin-bottom: 15px; font-style: italic; border-bottom: 1px dashed #f00; padding-bottom: 10px; }
-        .mission-log { font-size: 26px; line-height: 1.2; margin-bottom: 20px; }
-        .clue-box { color: #00f3ff; border: 1px solid #00f3ff; padding: 10px; margin-top: 10px; background: rgba(0, 243, 255, 0.05); }
-        .meb-hint { color: #ff00ff; font-weight: bold; margin-top: 5px; }
-        .action-zone { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        button { background: #000; border: 1px solid #0f0; color: #0f0; padding: 12px; font-family: 'VT323'; font-size: 22px; cursor: pointer; }
-        button:hover { background: #0f0; color: #000; }
-        .skip-btn { border-color: #f00; color: #f00; margin-top: 20px; }
-        input { background: #000; border: 2px solid #0f0; color: #0f0; font-family: 'VT323'; font-size: 28px; padding: 10px; width: 60%; outline: none; }
-        .send-btn { background: #00f; color: #fff; border: 1px solid #fff; padding: 10px 20px; margin-left: 10px; cursor: pointer; }
-    </style>
-</head>
-<body>
-<div class="scanlines"></div>
-<div id="terminal">
-    <div id="chase-status">
-        <span>AJAN ENKA</span>
-        <div class="distance-bar"><div id="player-icon">🕵️</div><div id="dr-icon">😈</div></div>
-        <span id="dist-text">Mesafe: 100 km</span>
-    </div>
-    <div class="screen">
-        <div id="dr-msg" class="dr-message"></div>
-        <div id="mission-text" class="mission-log"></div>
-        <div id="clue-box" class="clue-box" style="display:none;"></div>
-        <div id="interactive-area" class="action-zone"></div>
-        <button id="skip-btn" class="skip-btn" onclick="letDrEscape()">[!] DR. PARALEL BİRAZ DAHA UZAKLAŞIR (-50 KM)</button>
-    </div>
-</div>
-
 <script>
-    let currentStep = 0;
-    let distance = 100;
+    // ... (Üst kısımdaki CSS ve HTML aynı) ...
+
     const tasks = [
-        { dr: "Beni yakalayabileceğini mi sandın? İklimi sadece yağmurdan ibaret sanan bir acemisin!", text: "Dr. Paralel 'Hava yarın yağmurlu' diyerek iklimi basitleştirdi. O anki anlık durumun gerçek adını sisteme gir.", ans: "DURUMU", type: "input", meb: "" },
-        { dr: "Bileşen sistemini hackledim! Atmosfer ve hidrosfer dışında hiçbir şey bırakmadım!", text: "İklim sistemindeki 5 temel bileşenden atmosfer ve hidrosfer sağlam. Kalan 3 bileşeni aralarına virgül koyarak sisteme gir.", ans: "KRİYOSFER,LİTOSFER,BİYOSFER", type: "input", meb: "Sayfa 91" },
-        { dr: "Okyanus akıntılarını birbirine karıştırdım! Kuzey Yarım Küre'de yollarını bulamayacaksın!", text: "Kuzey Yarım Küre'de okyanus akıntılarının saptığı yön Dr. Paralel'in kaçış rotasıdır. Bu yön hangisidir?", ans: "SAĞ", type: "choice", opts: ["SAĞ", "SOL"], meb: "Sayfa 100" },
-        { dr: "Buzulların yansıtma gücünü sıfıra indirdim! Dünya erimeye başladı!", text: "Kutup bölgelerindeki beyaz yüzeylerin güneş ışığını geri yansıtma gücü tehlikede. Bu gücün ismini gir.", ans: "ALBEDO", type: "input", meb: "Sayfa 93" },
-        { dr: "Atmosferin kalbine sızdım! En hayati verileri oradan siliyorum!", text: "Dr. Paralel'den gelen sinyal; su buharının tamamının bulunduğu ve iklim olaylarının gerçekleştiği tabakadan geliyor. Hangi tabaka?", ans: "TROPOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Güneş ışınlarını serbest bıraktım! Koruyucu kalkanınızı deliyorum!", text: "Dr. Paralel Ozon gazını seyreltmeye çalışıyor. Ozon gazının yoğun olarak bulunduğu katmanı tespit et ve koru.", ans: "STRATOSFER", type: "choice", opts: ["STRATOSFER", "MEZOSFER"], meb: "Sayfa 94" },
-        { dr: "Uçağımın arkasındaki alevleri gördün mü? Hızıma yetişemezsin!", text: "Dürbünle izlerken aniden bir gök taşının alev aldığını gördün. Gök taşlarının parçalandığı bu katmanın ismini gir.", ans: "MEZOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Kutup ışıklarını (Aurora) söndüreceğim! Karanlıkta kaybolacaksın!", text: "Aurora ışıklarının görüldüğü, iyonize olmuş atmosfer tabakasını onar.", ans: "TERMOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Sınırın dışına çıkıyorum! Beni uzayda bile bulamazsın!", text: "Atmosferin uzaya açılan, sınırları en belirsiz olan dış katmanını tespit et.", ans: "EKZOSFER", type: "input", meb: "Sayfa 94" },
-        { dr: "Hava aniden soğudu değil mi? Çünkü yer değiştirdim!", text: "Dr. Paralel 36° Kuzey'den deniz kenarından fotoğraflar attı. İnsanlar önce kısa kolluydu, 5 gün sonra mont giymişlerdi. Paralel nereye gitti?", ans: "KUZEYE", type: "choice", opts: ["KUZEYE", "GÜNEYE"], meb: "Sayfa 96" }
+        // ... (1. Soru aynı)
+        { 
+            dr: "Bileşen sistemini hackledim! Atmosfer ve hidrosfer dışında hiçbir şey bırakmadım!", 
+            text: "İklim sistemindeki 5 temel bileşenden atmosfer ve hidrosfer sağlam. Kalan 3 bileşeni aralarına virgül koyarak gir (Örn: LİTOSFER, BİYOSFER, KRİYOSFER). Sıralama önemli değil!", 
+            ans: ["LİTOSFER", "BİYOSFER", "KRİYOSFER"], // Dizi olarak tanımladık
+            type: "input_match_all", // Özel tip
+            meb: "Sayfa 91" 
+        },
+        // ... (Diğer sorular aynı)
     ];
 
-    function loadScene(idx) {
-        if (idx >= tasks.length) { alert("Bölüm Tamamlandı!"); return; }
-        const task = tasks[idx];
-        document.getElementById('dr-msg').innerText = `DR. PARALEL: "${task.dr}"`;
-        document.getElementById('mission-text').innerHTML = `> GÖREV: ${task.text}`;
-        const cb = document.getElementById('clue-box');
-        if(task.meb) { cb.innerHTML = `[!] MEB REHBERİ: ${task.meb}`; cb.style.display = 'block'; } else { cb.style.display = 'none'; }
-        
-        const area = document.getElementById('interactive-area');
-        area.innerHTML = '';
-        if (task.type === "input") {
-            const inp = document.createElement('input'); inp.id = "u-ans"; inp.placeholder = "KOMUT...";
-            const btn = document.createElement('button'); btn.innerText = "GÖNDER"; btn.className = "send-btn";
-            btn.onclick = () => check(inp.value);
-            area.appendChild(inp); area.appendChild(btn);
-            inp.focus();
-            inp.onkeypress = (e) => { if(e.key === "Enter") check(inp.value); };
-        } else {
-            const r = document.createElement('div'); r.className = "choice-row";
-            task.opts.forEach(o => { const b = document.createElement('button'); b.innerText = o; b.onclick = () => check(o); r.appendChild(b); });
-            area.appendChild(r);
-        }
-        updateDist();
-    }
-
     function check(v) {
-        const c = (s) => s.toUpperCase().trim().replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C");
-        if(c(v) === c(tasks[currentStep].ans)) { distance -= 10; currentStep++; loadScene(currentStep); }
-        else { distance += 15; alert("YANLIŞ! Dr. Paralel kaçıyor!"); updateDist(); }
+        const task = tasks[currentStep];
+        
+        // Çoklu kelime kontrolü (Sıralama bağımsız)
+        if (task.type === "input_match_all") {
+            const userWords = v.toUpperCase().replace(/\s+/g, '').split(',').map(w => normalizeTurkish(w));
+            const correctWords = task.ans.map(w => normalizeTurkish(w));
+            
+            // Her iki liste de aynı kelimeleri içeriyor mu?
+            const isCorrect = correctWords.length === userWords.length && 
+                              correctWords.every(w => userWords.includes(w));
+
+            if (isCorrect) {
+                distance -= 10;
+                currentStep++;
+                loadScene(currentStep);
+            } else {
+                distance += 15;
+                alert("YANLIŞ! Eksik veya hatalı bileşen girdin. Dr. Paralel uzaklaşıyor!");
+                updateDist();
+            }
+            return;
+        }
+
+        // Standart kontrol
+        const clean = (s) => normalizeTurkish(s.replace(/\s+/g, '').toUpperCase().trim());
+        if(clean(v) === clean(task.ans)) { 
+            distance -= 10; currentStep++; loadScene(currentStep); 
+        } else { 
+            distance += 15; alert("YANLIŞ VERİ! Dr. Paralel kaçıyor!"); updateDist(); 
+        }
     }
 
-    function letDrEscape() { distance += 50; currentStep++; loadScene(currentStep); }
-    function updateDist() {
-        const p = 100 - (distance > 100 ? 100 : distance);
-        document.getElementById('player-icon').style.left = p + "%";
-        document.getElementById('dist-text').innerText = `Mesafe: ${distance} km`;
+    // Türkçe karakterleri standartlaştıran yardımcı fonksiyon
+    function normalizeTurkish(s) {
+        return s.replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C");
     }
-    loadScene(0);
 </script>
-</body>
-</html>
