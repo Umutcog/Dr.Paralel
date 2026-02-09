@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV: DR. PARALEL - BÖLÜM 1</title>
+    <title>AV: DR. PARALEL - BÖLÜM 1 V12.2</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'VT323', monospace; overflow: hidden; }
+        body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'VT323', monospace; overflow: hidden; transition: background-color 1s ease; }
         .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03)); background-size: 100% 3px, 3px 100%; }
         
-        #terminal { width: 95vw; height: 95vh; margin: 2.5vh auto; border: 2px solid #0f0; background: #050505; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px #0f0; }
+        #terminal { width: 95vw; height: 95vh; margin: 2.5vh auto; border: 2px solid #0f0; background: rgba(5, 5, 5, 0.9); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px #0f0; }
         
-        #chase-status { background: #111; border-bottom: 2px solid #0f0; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-size: 20px; }
+        #chase-status { background: rgba(17, 17, 17, 0.9); border-bottom: 2px solid #0f0; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-size: 20px; }
         .distance-bar { flex: 1; height: 12px; background: #222; margin: 0 25px; position: relative; border: 1px solid #0f0; }
         #player-icon { position: absolute; left: 0%; top: -12px; font-size: 28px; transition: left 0.8s ease-in-out; z-index: 5; }
         #dr-icon { position: absolute; left: 100%; top: -12px; font-size: 28px; color: #f00; transform: translateX(-100%); z-index: 4; }
@@ -20,7 +20,7 @@
         .dr-message { color: #f00; font-size: 24px; margin-bottom: 20px; font-style: italic; border-bottom: 1px dashed #f00; padding-bottom: 15px; }
         .mission-log { font-size: 28px; line-height: 1.3; margin-bottom: 25px; color: #eee; }
         
-        .clue-box { color: #00f3ff; border: 1px solid #00f3ff; padding: 15px; margin-top: 15px; background: rgba(0, 243, 255, 0.05); font-size: 20px; }
+        .clue-box { color: #00f3ff; border: 1px solid #00f3ff; padding: 15px; margin-top: 15px; background: rgba(0, 243, 255, 0.1); font-size: 20px; }
         .meb-hint { color: #ff00ff; font-weight: bold; margin-top: 10px; display: block; }
 
         .action-zone { margin-top: 30px; }
@@ -81,73 +81,83 @@
             text: "Dr. Paralel 'Hava yarın yağmurlu' diyerek iklimi basitleştirdi. O anki anlık durumun gerçek adını sisteme gir.", 
             ans: "HAVA DURUMU", 
             type: "input", 
-            meb: "Hava olaylarının dar bir alandaki anlık/kısa süreli hali." 
+            meb: "Hava olaylarının dar bir alandaki anlık/kısa süreli hali.",
+            bg: "#1a1a1a"
         },
         { 
             dr: "Bileşen sistemini hackledim! Atmosfer ve hidrosfer dışında hiçbir şey bırakmadım!", 
-            text: "Atmosfer ve hidrosfer yerinde duruyor. Kalan 3 temel bileşeni gir. (BÜYÜK HARFLE, aralarına virgül ve boşluk koyarak: ÖRN: KELİME, KELİME, KELİME)", 
+            text: "Atmosfer ve hidrosfer yerinde duruyor. Kalan 3 temel bileşeni gir. (ÖRN: LİTOSFER, BİYOSFER, KRİYOSFER)", 
             ans: ["KRİYOSFER", "LİTOSFER", "BİYOSFER"], 
             type: "match_all", 
-            meb: "MEB Kitabı Sayfa 91" 
+            meb: "MEB Kitabı Sayfa 91",
+            bg: "#0d210d"
         },
         { 
             dr: "Kuzey Yarım Küre'ye saptım! Okyanus akıntıları bile benden yana!", 
-            text: "Kuzey Yarım Küre'de okyanus akıntıları hangi yöne sapar? Bu bilgi Dr. Paralel'in kaçış yönüdür.", 
+            text: "Kuzey Yarım Küre'de okyanus akıntıları hangi yöne sapar?", 
             ans: "SAĞ", 
             type: "choice", 
             opts: ["SAĞ", "SOL"], 
-            meb: "MEB Kitabı Sayfa 100" 
+            meb: "MEB Kitabı Sayfa 100",
+            bg: "#001a33"
         },
         { 
-            dr: "Buzulların o meşhur yansıtma gücünü emdim! Dünya artık çok daha sıcak!", 
+            dr: "Buzulların o meşhur yansıtma gücünü emdim!", 
             text: "Kutup bölgelerindeki beyaz yüzeylerin güneş ışığını geri yansıtma kapasitesini onar.", 
             ans: "ALBEDO", 
             type: "input", 
-            meb: "MEB Kitabı Sayfa 93" 
+            meb: "MEB Kitabı Sayfa 93",
+            bg: "#2d2d2d"
         },
         { 
             dr: "En hayati verileri sildim! Atmosferin kalbine ulaştım!", 
-            text: "Dr. Paralel'den gelen sinyal; su buharının tamamının bulunduğu ve iklim olaylarının gerçekleştiği tabakadan geliyor. Hangi tabaka?", 
+            text: "Su buharının tamamının bulunduğu tabaka hangisidir?", 
             ans: "TROPOSFER", 
             type: "input", 
-            meb: "MEB Kitabı Sayfa 94" 
+            meb: "MEB Kitabı Sayfa 94",
+            bg: "#1a0f00"
         },
         { 
-            dr: "Güneş'in zararlı ışınlarını üzerinize salıyorum! Koruyucu gazınızı yok ediyorum!", 
-            text: "Dr. Paralel Ozon gazını seyreltmeye çalışıyor. Ozon gazının bulunduğu atmosfer tabakasını koruma altına al.", 
+            dr: "Güneş'in zararlı ışınlarını üzerinize salıyorum!", 
+            text: "Ozon gazının bulunduğu atmosfer tabakasını koruma altına al.", 
             ans: "STRATOSFER", 
             type: "choice", 
             opts: ["STRATOSFER", "MEZOSFER"], 
-            meb: "MEB Kitabı Sayfa 94" 
+            meb: "MEB Kitabı Sayfa 94",
+            bg: "#1a0033"
         },
         { 
             dr: "Hızıma bak! Arkamda sadece yanan gök taşları bırakıyorum!", 
-            text: "Dürbünle izlerken bir gök taşının alev aldığını gördün. Gök taşlarının parçalandığı bu katmanın ismini gir.", 
+            text: "Gök taşlarının parçalandığı bu katmanın ismini gir.", 
             ans: "MEZOSFER", 
             type: "input", 
-            meb: "MEB Kitabı Sayfa 94" 
+            meb: "MEB Kitabı Sayfa 94",
+            bg: "#330000"
         },
         { 
-            dr: "Kutup ışıklarını karartacağım! Aurora'ları asla göremeyeceksiniz!", 
-            text: "Aurora ışıklarının oluştuğu, radyo dalgalarını yansıtan katmanı tespit et.", 
+            dr: "Kutup ışıklarını karartacağım!", 
+            text: "Aurora ışıklarının oluştuğu katmanı tespit et.", 
             ans: "TERMOSFER", 
             type: "input", 
-            meb: "MEB Kitabı Sayfa 94" 
+            meb: "MEB Kitabı Sayfa 94",
+            bg: "#003322"
         },
         { 
-            dr: "Artık atmosferin bile dışındayım! Beni uzayda ara!", 
-            text: "Atmosferin uzaya açılan, yer çekiminin en az olduğu en dış katmanı onar.", 
+            dr: "Artık atmosferin bile dışındayım!", 
+            text: "Atmosferin uzaya açılan en dış katmanı onar.", 
             ans: "EKZOSFER", 
             type: "input", 
-            meb: "MEB Kitabı Sayfa 94" 
+            meb: "MEB Kitabı Sayfa 94",
+            bg: "#000000"
         },
         { 
-            dr: "Gördüğün fotoğraflar her şeyi anlatıyor! Hangi yöne gittiğimi bul da görelim!", 
-            text: "Dr. Paralel 36° Kuzey'de deniz kenarındaydı (Kısa kolluydu). 5 gün sonra yine deniz kenarında ama herkes montlu. Dr. Paralel hangi yöne gitmiştir?", 
+            dr: "Gördüğün fotoğraflar her şeyi anlatıyor!", 
+            text: "Isınmak yerine herkes mont giymeye başladıysa Dr. Paralel hangi yöne gitmiştir?", 
             ans: "KUZEYE", 
             type: "choice", 
             opts: ["KUZEYE", "GÜNEYE"], 
-            meb: "MEB Kitabı Sayfa 96" 
+            meb: "MEB Kitabı Sayfa 96",
+            bg: "#001a1a"
         }
     ];
 
@@ -158,8 +168,9 @@
 
     function loadScene(idx) {
         if (idx >= tasks.length) { 
+            document.body.style.backgroundColor = "#000";
             document.getElementById('dr-msg').innerText = "DR. PARALEL: 'Seni şimdilik atlattım ama döneceğim!'";
-            document.getElementById('mission-text').innerText = "TEBRİKLER AJAN! BİRİNCİ BÖLÜMÜ TAMAMLADIN. 11. SORU İÇİN SAYFA NUMARALARI BEKLENİYOR.";
+            document.getElementById('mission-text').innerText = "TEBRİKLER AJAN! BİRİNCİ BÖLÜMÜ TAMAMLADIN. DR. PARALEL'İ KÖŞEYE SIKIŞTIRIYORUZ. ŞİMDİ SIRADAKİ BÖLÜM İÇİN SAYFA NUMARALARI BEKLENİYOR.";
             document.getElementById('interactive-area').innerHTML = "";
             document.getElementById('clue-box').style.display = 'none';
             return; 
@@ -167,6 +178,10 @@
         
         currentStep = idx;
         const t = tasks[idx];
+        
+        // ARKA PLAN RENGİNİ GÜNCELLE
+        document.body.style.backgroundColor = t.bg;
+        
         document.getElementById('dr-msg').innerText = `DR. PARALEL: "${t.dr}"`;
         document.getElementById('mission-text').innerHTML = `> GÖREV: ${t.text}`;
         
