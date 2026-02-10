@@ -3,259 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV: DR. PARALEL - BÖLÜM 1 V12.2</title>
+    <title>WINDOWS: NEBULA MISSION</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'VT323', monospace; overflow: hidden; transition: background-color 1s ease; }
-        .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03)); background-size: 100% 3px, 3px 100%; }
+        :root { --win-blue: #008080; --win-gray: #c0c0c0; --win-dark-gray: #808080; }
+        body { margin: 0; padding: 0; background-color: var(--win-blue); font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
         
-        #terminal { width: 95vw; height: 95vh; margin: 2.5vh auto; border: 2px solid #0f0; background: rgba(5, 5, 5, 0.9); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px #0f0; }
+        /* MASAÜSTÜ SİMGELERİ */
+        #desktop { width: 100vw; height: 100vh; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .icon { width: 70px; text-align: center; color: white; font-size: 12px; cursor: pointer; text-shadow: 1px 1px 1px black; }
+        .icon img { width: 40px; height: 40px; margin-bottom: 5px; }
+
+        /* GÖREV ÇUBUĞU */
+        #taskbar { position: fixed; bottom: 0; width: 100%; height: 35px; background: var(--win-gray); border-top: 2px solid white; display: flex; align-items: center; padding: 2px; z-index: 1000; }
+        .start-btn { background: var(--win-gray); border: 2px outset white; padding: 2px 10px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .clock { margin-left: auto; border: 2px inset white; padding: 2px 10px; font-size: 12px; }
+
+        /* WINDOWS PENCERESİ */
+        #window { position: absolute; top: 10%; left: 10%; width: 80%; height: 75%; background: var(--win-gray); border: 2px outset white; display: none; flex-direction: column; box-shadow: 5px 5px 15px black; }
+        .win-title { background: navy; color: white; padding: 3px 10px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 14px; }
+        .win-body { flex: 1; padding: 20px; overflow-y: auto; background: white; border: 2px inset var(--win-gray); margin: 5px; font-family: 'VT323', monospace; }
         
-        #chase-status { background: rgba(17, 17, 17, 0.9); border-bottom: 2px solid #0f0; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-size: 20px; }
-        .distance-bar { flex: 1; height: 12px; background: #222; margin: 0 25px; position: relative; border: 1px solid #0f0; }
-        #player-icon { position: absolute; left: 0%; top: -12px; font-size: 28px; transition: left 0.8s ease-in-out; z-index: 5; }
-        #dr-icon { position: absolute; left: 100%; top: -12px; font-size: 28px; color: #f00; transform: translateX(-100%); z-index: 4; }
+        /* KOVALAMACA PANELİ */
+        #chase-ui { background: black; color: lime; padding: 10px; margin-bottom: 15px; border: 2px inset white; }
+        .dist-bar { height: 10px; background: #333; position: relative; border: 1px solid lime; margin: 10px 0; }
+        #player { position: absolute; left: 0; top: -10px; transition: 0.5s; }
 
-        .screen { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
-        .dr-message { color: #f00; font-size: 24px; margin-bottom: 20px; font-style: italic; border-bottom: 1px dashed #f00; padding-bottom: 15px; }
-        .mission-log { font-size: 28px; line-height: 1.3; margin-bottom: 25px; color: #eee; }
+        /* SORU TASARIMI */
+        .dr-text { color: red; font-size: 20px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
+        .mission-text { font-size: 22px; color: black; line-height: 1.2; }
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-win { background: var(--win-gray); border: 2px outset white; color: black; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 20px; }
+        .btn-win:active { border-style: inset; }
         
-        .clue-box { color: #00f3ff; border: 1px solid #00f3ff; padding: 15px; margin-top: 15px; background: rgba(0, 243, 255, 0.1); font-size: 20px; }
-        .meb-hint { color: #ff00ff; font-weight: bold; margin-top: 10px; display: block; }
+        /* MATCHING GAME (WINDOWS TARZI) */
+        .match-container { display: flex; justify-content: space-around; margin-top: 15px; }
+        .drop-zone { border: 2px inset white; width: 120px; height: 60px; text-align: center; background: #eee; }
+        .drag-pool { display: flex; gap: 5px; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px; }
+        .drag-item { background: var(--win-gray); border: 2px outset white; padding: 5px; cursor: pointer; font-size: 16px; }
+        .selected { background: navy !important; color: white !important; }
 
-        .action-zone { margin-top: 30px; }
-        .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        button { background: #000; border: 2px solid #0f0; color: #0f0; padding: 15px; font-family: 'VT323'; font-size: 24px; cursor: pointer; text-transform: uppercase; }
-        button:hover { background: #0f0; color: #000; }
-        
-        .input-group { display: flex; gap: 10px; }
-        input { flex: 1; background: #000; border: 2px solid #0f0; color: #0f0; font-family: 'VT323'; font-size: 30px; padding: 12px; outline: none; }
-        .send-btn { background: #0033cc; color: #fff; border: 2px solid #fff; padding: 0 30px; cursor: pointer; }
-
-        .skip-btn { border-color: #f00; color: #f00; margin-top: 40px; width: 100%; font-size: 20px; }
-
-        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .skip-btn { color: red; font-size: 14px; text-decoration: underline; background: none; border: none; cursor: pointer; margin-top: 20px; display: block; }
     </style>
 </head>
 <body>
 
-<div class="scanlines"></div>
-
-<div id="start-overlay">
-    <h1 style="font-size: 60px; color: #f00;">// OPERATION: NEBULA //</h1>
-    <p style="font-size: 28px; max-width: 700px; margin-bottom: 40px;">Dr. Paralel dünya iklim sistemini bozdu ve kaçıyor. Şifreleri çöz ve onu yakala!</p>
-    <button onclick="startChase()" style="font-size: 45px; padding: 20px 70px;">[ SİSTEME GİR ]</button>
-</div>
-
-<div id="terminal">
-    <div id="chase-status">
-        <span>AJAN: ENKA</span>
-        <div class="distance-bar">
-            <div id="player-icon">🕵️</div>
-            <div id="dr-icon">😈</div>
+    <div id="desktop">
+        <div class="icon" onclick="openGame()">
+            <img src="https://win98icons.alexmeub.com/icons/png/computer_explorer-4.png">
+            <p>Bilgisayarım</p>
         </div>
-        <span id="dist-text">MESAFE: 100 KM</span>
+        <div class="icon" onclick="openGame()">
+            <img src="https://win98icons.alexmeub.com/icons/png/world-3.png">
+            <p>Nebula.exe</p>
+        </div>
     </div>
 
-    <div class="screen">
-        <div id="dr-msg" class="dr-message"></div>
-        <div id="mission-text" class="mission-log"></div>
-        <div id="clue-box" class="clue-box"></div>
-        <div id="interactive-area" class="action-zone"></div>
-        <button id="skip-btn" class="skip-btn" onclick="letDrEscape()">[!] GÖREVİ ATLA (DR. PARALEL UZAKLAŞIR -50 KM)</button>
+    <div id="window">
+        <div class="win-title">
+            <span>Nebula Mission Terminal - 50 KM MESAFE</span>
+            <span style="background:var(--win-gray); color:black; width:18px; text-align:center; border:1px outset white; cursor:pointer">X</span>
+        </div>
+        <div class="win-body">
+            <div id="chase-ui">
+                MESAFA TAKİBİ: <span id="dist-label">100 KM</span>
+                <div class="dist-bar"><div id="player">🕵️</div></div>
+            </div>
+            <div id="dr-area" class="dr-text"></div>
+            <div id="task-area" class="mission-text"></div>
+            <div id="action-area" class="choice-grid"></div>
+            <button class="skip-btn" onclick="letDrEscape()">[!] Görevi Atla (Dr. Paralel Uzaklaşır)</button>
+        </div>
     </div>
-</div>
+
+    <div id="taskbar">
+        <div class="start-btn"><b>Başlat</b></div>
+        <div class="clock" id="clock">10:14</div>
+    </div>
 
 <script>
-    let currentStep = 0;
+    let currentTask = 0;
     let distance = 100;
-
-    function normalizeT(s) {
-        if(!s) return "";
-        return s.toUpperCase().replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C").trim();
-    }
+    let selectedPart = null;
 
     const tasks = [
         { 
-            dr: "Hava yarın yağmurlu olacak dedim ve kaçtım! Bu kadar basit bir sistemde beni asla bulamazsın!", 
-            text: "Dr. Paralel 'Hava yarın yağmurlu' diyerek iklimi basitleştirdi. O anki anlık durumun gerçek adını sisteme gir.", 
-            ans: "HAVA DURUMU", 
-            type: "input", 
-            meb: "Hava olaylarının dar bir alandaki anlık/kısa süreli hali.",
-            bg: "#1a1a1a"
+            dr: "Hava yarın yağmurlu olacak dedim ve kaçtım!", 
+            text: "O anki anlık durumun gerçek adını seç.", 
+            type: "choice", opts: ["İKLİM", "HAVA DURUMU"], ans: 1, bg: "#c0c0c0", meb: "" 
         },
         { 
             dr: "Bileşen sistemini hackledim! Atmosfer ve hidrosfer dışında hiçbir şey bırakmadım!", 
-            text: "Atmosfer ve hidrosfer yerinde duruyor. Kalan 3 temel bileşeni gir. (ÖRN: LİTOSFER, BİYOSFER, KRİYOSFER)", 
-            ans: ["KRİYOSFER", "LİTOSFER", "BİYOSFER"], 
-            type: "match_all", 
-            meb: "MEB Kitabı Sayfa 91",
-            bg: "#0d210d"
+            text: "Eksik 3 bileşeni doğru kutulara yerleştir.", 
+            type: "match", items: ["KRİYOSFER", "LİTOSFER", "BİYOSFER"], 
+            targets: ["Kutu 1", "Kutu 2", "Kutu 3"], bg: "#d0e0d0", meb: "Sayfa 91" 
         },
         { 
-            dr: "Kuzey Yarım Küre'ye saptım! Okyanus akıntıları bile benden yana!", 
+            dr: "Kuzey Yarım Küre'de yollarını bulamayacaksın!", 
             text: "Kuzey Yarım Küre'de okyanus akıntıları hangi yöne sapar?", 
-            ans: "SAĞ", 
-            type: "choice", 
-            opts: ["SAĞ", "SOL"], 
-            meb: "MEB Kitabı Sayfa 100",
-            bg: "#001a33"
+            type: "choice", opts: ["SAĞ", "SOL"], ans: 0, bg: "#b0c4de", meb: "Sayfa 100" 
         },
         { 
-            dr: "Buzulların o meşhur yansıtma gücünü emdim!", 
-            text: "Kutup bölgelerindeki beyaz yüzeylerin güneş ışığını geri yansıtma kapasitesini onar.", 
-            ans: "ALBEDO", 
-            type: "input", 
-            meb: "MEB Kitabı Sayfa 93",
-            bg: "#2d2d2d"
+            dr: "Buzulların yansıtma gücünü emdim!", 
+            text: "Beyaz yüzeylerin güneş ışığını yansıtma kapasitesine ne denir?", 
+            type: "choice", opts: ["ALBEDO", "ABSORBSİYON"], ans: 0, bg: "#ffffff", meb: "Sayfa 93" 
         },
         { 
-            dr: "En hayati verileri sildim! Atmosferin kalbine ulaştım!", 
+            dr: "Atmosferin kalbine sızdım!", 
             text: "Su buharının tamamının bulunduğu tabaka hangisidir?", 
-            ans: "TROPOSFER", 
-            type: "input", 
-            meb: "MEB Kitabı Sayfa 94",
-            bg: "#1a0f00"
+            type: "choice", opts: ["TROPOSFER", "STRATOSFER"], ans: 0, bg: "#ffe4b5", meb: "Sayfa 94" 
         },
         { 
-            dr: "Güneş'in zararlı ışınlarını üzerinize salıyorum!", 
-            text: "Ozon gazının bulunduğu atmosfer tabakasını koruma altına al.", 
-            ans: "STRATOSFER", 
-            type: "choice", 
-            opts: ["STRATOSFER", "MEZOSFER"], 
-            meb: "MEB Kitabı Sayfa 94",
-            bg: "#1a0033"
+            dr: "Ozon gazını seyreltiyorum!", 
+            text: "Ozon gazının bulunduğu atmosfer tabakasını seç.", 
+            type: "choice", opts: ["STRATOSFER", "MEZOSFER"], ans: 0, bg: "#e6e6fa", meb: "Sayfa 94" 
         },
         { 
-            dr: "Hızıma bak! Arkamda sadece yanan gök taşları bırakıyorum!", 
-            text: "Gök taşlarının parçalandığı bu katmanın ismini gir.", 
-            ans: "MEZOSFER", 
-            type: "input", 
-            meb: "MEB Kitabı Sayfa 94",
-            bg: "#330000"
+            dr: "Dürbünle bak, gök taşları nasıl parçalanıyor!", 
+            text: "Gök taşlarının alev alıp parçalandığı katman hangisidir?", 
+            type: "choice", opts: ["MEZOSFER", "EKZOSFER"], ans: 0, bg: "#f08080", meb: "Sayfa 94" 
         },
         { 
-            dr: "Kutup ışıklarını karartacağım!", 
-            text: "Aurora ışıklarının oluştuğu katmanı tespit et.", 
-            ans: "TERMOSFER", 
-            type: "input", 
-            meb: "MEB Kitabı Sayfa 94",
-            bg: "#003322"
+            dr: "Aurora ışıklarını söndüreceğim!", 
+            text: "Kutup ışıklarının görüldüğü katman hangisidir?", 
+            type: "choice", opts: ["TERMOSFER", "TROPOSFER"], ans: 0, bg: "#98fb98", meb: "Sayfa 94" 
         },
         { 
-            dr: "Artık atmosferin bile dışındayım!", 
-            text: "Atmosferin uzaya açılan en dış katmanı onar.", 
-            ans: "EKZOSFER", 
-            type: "input", 
-            meb: "MEB Kitabı Sayfa 94",
-            bg: "#000000"
+            dr: "Beni uzayda ara!", 
+            text: "Atmosferin en dış katmanını onar.", 
+            type: "choice", opts: ["EKZOSFER", "MEZOSFER"], ans: 0, bg: "#000000", meb: "Sayfa 94" 
         },
         { 
-            dr: "Gördüğün fotoğraflar her şeyi anlatıyor!", 
-            text: "Isınmak yerine herkes mont giymeye başladıysa Dr. Paralel hangi yöne gitmiştir?", 
-            ans: "KUZEYE", 
-            type: "choice", 
-            opts: ["KUZEYE", "GÜNEYE"], 
-            meb: "MEB Kitabı Sayfa 96",
-            bg: "#001a1a"
+            dr: "Hava aniden soğudu değil mi? Çünkü yer değiştirdim!", 
+            text: "Dr. Paralel'in Hatay'da deniz kenarında çektiği fotoğrafta kısa kollu kıyafet vardı. Yakın zamanlı diğer fotoğrafta ise başka bir deniz kenarında ama mont var. O halde hangi yöne gitmiştir?", 
+            type: "choice", opts: ["KUZEYE", "GÜNEYE"], ans: 0, bg: "#afeeee", meb: "Sayfa 96" 
         }
     ];
 
-    function startChase() {
-        document.getElementById('start-overlay').style.display = 'none';
-        loadScene(0);
-    }
+    function openGame() { document.getElementById('window').style.display = 'flex'; loadTask(); }
 
-    function loadScene(idx) {
-        if (idx >= tasks.length) { 
-            document.body.style.backgroundColor = "#000";
-            document.getElementById('dr-msg').innerText = "DR. PARALEL: 'Seni şimdilik atlattım ama döneceğim!'";
-            document.getElementById('mission-text').innerText = "TEBRİKLER AJAN! BİRİNCİ BÖLÜMÜ TAMAMLADIN. DR. PARALEL'İ KÖŞEYE SIKIŞTIRIYORUZ. ŞİMDİ SIRADAKİ BÖLÜM İÇİN SAYFA NUMARALARI BEKLENİYOR.";
-            document.getElementById('interactive-area').innerHTML = "";
-            document.getElementById('clue-box').style.display = 'none';
-            return; 
-        }
+    function loadTask() {
+        if(currentTask >= tasks.length) { alert("BÖLÜM 1 TAMAMLANDI!"); return; }
+        const t = tasks[currentTask];
+        document.querySelector('.win-body').parentElement.style.backgroundColor = t.bg || "#c0c0c0";
+        document.getElementById('dr-area').innerText = `DR. PARALEL: "${t.dr}"`;
+        document.getElementById('task-area').innerHTML = `GÖREV ${currentTask+1}: ${t.text} <br><small style="color:blue">[!] MEB: ${t.meb}</small>`;
         
-        currentStep = idx;
-        const t = tasks[idx];
-        
-        // ARKA PLAN RENGİNİ GÜNCELLE
-        document.body.style.backgroundColor = t.bg;
-        
-        document.getElementById('dr-msg').innerText = `DR. PARALEL: "${t.dr}"`;
-        document.getElementById('mission-text').innerHTML = `> GÖREV: ${t.text}`;
-        
-        const cb = document.getElementById('clue-box');
-        cb.innerHTML = `[!] İPUCU: ${t.meb}`;
-        
-        const area = document.getElementById('interactive-area');
-        area.innerHTML = '';
+        const action = document.getElementById('action-area');
+        action.innerHTML = '';
 
-        if (t.type === "choice") {
-            const row = document.createElement('div');
-            row.className = "choice-row";
-            t.opts.forEach(o => {
+        if(t.type === "choice") {
+            t.opts.forEach((opt, idx) => {
                 const b = document.createElement('button');
-                b.innerText = o;
-                b.onclick = () => checkAns(o);
-                row.appendChild(b);
+                b.className = 'btn-win';
+                b.innerText = opt;
+                b.onclick = () => check(idx === t.ans);
+                action.appendChild(b);
             });
-            area.appendChild(row);
-        } else {
-            const group = document.createElement('div');
-            group.className = "input-group";
-            const inp = document.createElement('input');
-            inp.id = "user-ans";
-            inp.placeholder = "VERİ GİRİŞİ...";
-            inp.autocomplete = "off";
-            const btn = document.createElement('button');
-            btn.innerText = "GÖNDER";
-            btn.className = "send-btn";
-            btn.onclick = () => checkAns(inp.value);
-            group.appendChild(inp);
-            group.appendChild(btn);
-            area.appendChild(group);
-            inp.focus();
-            inp.onkeypress = (e) => { if(e.key === "Enter") checkAns(inp.value); };
+        } else if(t.type === "match") {
+            const container = document.createElement('div');
+            container.innerHTML = `<div class='match-container'>
+                <div id='z1' class='drop-zone' onclick='drop(this)'>Bileşen 1</div>
+                <div id='z2' class='drop-zone' onclick='drop(this)'>Bileşen 2</div>
+                <div id='z3' class='drop-zone' onclick='drop(this)'>Bileşen 3</div>
+            </div>
+            <div class='drag-pool' id='pool'></div>`;
+            action.appendChild(container);
+            t.items.forEach(item => {
+                const i = document.createElement('div');
+                i.className = 'drag-item';
+                i.innerText = item;
+                i.onclick = function() {
+                    document.querySelectorAll('.drag-item').forEach(d => d.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPart = this;
+                };
+                document.getElementById('pool').appendChild(i);
+            });
         }
-        updateDist();
+        updateUI();
     }
 
-    function checkAns(val) {
-        const t = tasks[currentStep];
-        let correct = false;
-
-        if (t.type === "match_all") {
-            const userWords = val.split(',').map(w => normalizeT(w));
-            const targetWords = t.ans.map(w => normalizeT(w));
-            correct = targetWords.length === userWords.length && targetWords.every(w => userWords.includes(w));
-        } else {
-            correct = normalizeT(val) === normalizeT(t.ans);
-        }
-
-        if (correct) {
-            distance -= 10;
-            if (distance < 5) distance = 5;
-            currentStep++;
-            loadScene(currentStep);
-        } else {
-            distance += 15;
-            alert("HATALI ANALİZ! Dr. Paralel arayı açtı!");
-            updateDist();
-        }
+    function drop(zone) {
+        if(!selectedPart) return;
+        zone.innerText = selectedPart.innerText;
+        selectedPart.remove();
+        selectedPart = null;
+        if(document.getElementById('pool').children.length === 0) check(true);
     }
 
-    function letDrEscape() {
-        distance += 50;
-        currentStep++;
-        loadScene(currentStep);
+    function check(isCorrect) {
+        if(isCorrect) { distance -= 10; currentTask++; loadTask(); }
+        else { distance += 15; alert("YANLIŞ TERCİH! Dr. Paralel uzaklaşıyor!"); updateUI(); }
     }
 
-    function updateDist() {
+    function letDrEscape() { distance += 50; currentTask++; loadTask(); }
+
+    function updateUI() {
+        if(distance < 5) distance = 5;
         const p = 100 - (distance > 100 ? 100 : distance);
-        document.getElementById('player-icon').style.left = p + "%";
-        document.getElementById('dist-text').innerText = `MESAFE: ${distance} KM`;
+        document.getElementById('player').style.left = p + "%";
+        document.getElementById('dist-label').innerText = distance + " KM";
     }
+
+    setInterval(() => {
+        const d = new Date();
+        document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2, '0');
+    }, 1000);
 </script>
 </body>
 </html>
