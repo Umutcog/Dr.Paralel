@@ -2,66 +2,51 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA ONLINE: AJAN vs HIRSIZ</title>
+    <title>NEBULA ONLINE: TABLET OPTIMIZED</title>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --win-blue: #008080; --win-gray: #c0c0c0; --win-dark: #808080; }
+        :root { --win-blue: #008080; --win-gray: #c0c0c0; }
         body { margin: 0; background-color: var(--win-blue); font-family: 'Tahoma', sans-serif; overflow: hidden; }
-        
-        /* GİRİŞ EKRANI */
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 400px; padding: 20px; box-shadow: 10px 10px 0 black; }
-        
-        /* OYUN EKRANI */
+        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 350px; padding: 15px; box-shadow: 8px 8px 0 black; }
         #desktop { display: none; width: 100vw; height: 100vh; }
-        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; background: var(--win-gray); border: 2px outset white; box-shadow: 10px 10px 0 rgba(0,0,0,0.5); }
-        .win-title { background: navy; color: white; padding: 3px 10px; font-weight: bold; display: flex; justify-content: space-between; font-size: 14px; }
-        .win-body { padding: 15px; background: white; border: 2px inset var(--win-gray); margin: 5px; font-family: 'VT323'; height: 400px; overflow-y: auto; }
-
-        /* DURUM ÇUBUĞU */
-        #status-panel { background: #000; color: #0f0; padding: 10px; border: 2px inset white; margin-bottom: 10px; font-size: 20px; }
-        .dist-track { height: 12px; background: #222; border: 1px solid #0f0; position: relative; margin-top: 5px; }
-        #icon-player { position: absolute; left: 0; top: -10px; transition: 0.5s; font-size: 22px; }
-        #icon-dr { position: absolute; left: 50%; top: -10px; transition: 0.5s; font-size: 22px; }
-
-        /* BUTONLAR */
-        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 8px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; margin: 5px 0; }
-        .btn-win:active { border-style: inset; }
-        .btn-win:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        input { width: 100%; padding: 5px; margin: 10px 0; font-family: 'VT323'; font-size: 18px; border: 2px inset white; }
+        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 700px; background: var(--win-gray); border: 2px outset white; }
+        .win-title { background: navy; color: white; padding: 5px; font-weight: bold; font-size: 14px; }
+        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 5px; font-family: 'VT323'; min-height: 350px; }
+        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; margin-top: 10px; }
+        .dist-track { height: 15px; background: #222; border: 1px solid #0f0; position: relative; margin: 15px 0; }
+        #icon-player { position: absolute; left: 0; top: -10px; transition: 0.8s ease; font-size: 25px; }
+        #icon-dr { position: absolute; left: 50%; top: -10px; transition: 0.8s ease; font-size: 25px; }
+        input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-size: 16px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px 5px; font-weight:bold; margin-bottom:10px;">SİSTEM BAĞLANTISI</div>
-            <div id="my-id-display" style="font-weight:bold; margin-bottom:10px;">KODUNUZ OLUŞTURULUYOR...</div>
-            <p>Oda kurmak için kodu arkadaşına ver veya arkadaşının kodunu aşağıya yaz:</p>
-            <input type="text" id="target-id" placeholder="ARKADAŞININ KODU">
-            <button class="btn-win" onclick="connectToPeer()">OPERASYONA BAĞLAN</button>
-            <p style="font-size:11px; color:red; margin-top:10px;">*İki oyuncu da aynı sayfada olmalıdır.</p>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px;">ONLINE_SYNC.EXE</div>
+            <div id="my-id-display">KOD ALINIYOR...</div>
+            <hr>
+            <input type="text" id="target-id" placeholder="ARKADAŞININ KODUNU YAZ">
+            <button class="btn-win" onclick="connectToPeer()">BAĞLAN VE BAŞLAT</button>
+            <p style="font-size:12px; color:#555;">*Eğer bağlanmazsa okul ağından çıkıp mobil veri deneyin.</p>
         </div>
     </div>
 
     <div id="desktop">
         <div class="window">
-            <div class="win-title">
-                <span id="role-label">NEBULA TERMINAL</span>
-                <span>x</span>
-            </div>
+            <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
-                <div id="status-panel">
-                    <div id="turn-info">BAĞLANTI BEKLENİYOR...</div>
+                <div style="background:black; color:#0f0; padding:10px; border:2px inset white;">
+                    <div id="turn-info">SİSTEM ANALİZİ...</div>
                     <div class="dist-track">
                         <div id="icon-player">🕵️</div>
                         <div id="icon-dr">😈</div>
                     </div>
                 </div>
-                <div id="game-area">
-                    <h2 id="q-text">Veri bekleniyor...</h2>
+                <div id="game-area" style="color:black; margin-top:15px;">
+                    <h2 id="q-text" style="font-size:26px;">Yükleniyor...</h2>
                     <div id="options-area"></div>
                 </div>
             </div>
@@ -75,47 +60,55 @@
     let currentTaskIdx = 0;
 
     const tasks = [
-        { q: "Hava olaylarının dar bir alandaki kısa süreli hali?", opts: ["HAVA DURUMU", "İKLİM"], ans: 0 },
-        { q: "Gök taşlarının parçalandığı atmosfer katmanı?", opts: ["MEZOSFER", "STRATOSFER"], ans: 0 },
-        { q: "Kuzey Yarım Küre'de okyanus akıntıları nereye sapar?", opts: ["SAĞA", "SOLA"], ans: 0 },
-        { q: "Beyaz yüzeylerin güneş ışığını yansıtma gücü?", opts: ["ALBEDO", "SERA ETKİSİ"], ans: 0 },
-        { q: "Ozon tabakası hangi katmandadır?", opts: ["STRATOSFER", "TROPOSFER"], ans: 0 }
+        { q: "Hava olaylarının anlık durumu?", opts: ["HAVA DURUMU", "İKLİM"], ans: 0 },
+        { q: "Ozon tabakası hangi katmandadır?", opts: ["STRATOSFER", "TROPOSFER"], ans: 0 },
+        { q: "Kutup ışıklarının görüldüğü katman?", opts: ["TERMOSFER", "MEZOSFER"], ans: 0 },
+        { q: "Gök taşlarının parçalandığı katman?", opts: ["MEZOSFER", "EKZOSFER"], ans: 0 },
+        { q: "Enlemin etkisiyle sıcaklık nereye doğru azalır?", opts: ["KUTUPLARA", "EKVATORA"], ans: 0 }
     ];
 
-    // PeerJS Başlatma
-    peer = new Peer();
-
-    peer.on('open', (id) => {
-        document.getElementById('my-id-display').innerText = "SENİN KODUN: " + id;
+    // OKUL AĞI İÇİN GOOGLE STUN SERVER DESTEĞİ
+    peer = new Peer({
+        config: {'iceServers': [{ url: 'stun:stun.l.google.com:19302' }]}
     });
 
-    // Birisi sana bağlandığında (Sen Oda Kurucusun)
+    peer.on('open', (id) => {
+        document.getElementById('my-id-display').innerText = "KODUN: " + id;
+    });
+
     peer.on('connection', (c) => {
         conn = c;
         myRole = 'ajan';
-        initGame();
+        handleConnection();
     });
 
-    // Sen birine bağlandığında (Sen Operatörsün)
     function connectToPeer() {
-        const targetId = document.getElementById('target-id').value;
-        if(!targetId) return alert("Kod girmelisin!");
-        conn = peer.connect(targetId);
+        const tid = document.getElementById('target-id').value;
+        if(!tid) return;
+        conn = peer.connect(tid);
         myRole = 'hirsiz';
-        initGame();
+        handleConnection();
+    }
+
+    function handleConnection() {
+        conn.on('open', () => {
+            // Bağlantı açıldığı an ilk veriyi göndererek karşı tarafı tetikle
+            conn.send({ type: 'start', d: distance, idx: currentTaskIdx });
+            initGame();
+        });
+
+        conn.on('data', (data) => {
+            distance = data.d;
+            currentTaskIdx = data.idx;
+            if(data.type === 'start') initGame();
+            render();
+        });
     }
 
     function initGame() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('desktop').style.display = 'block';
         document.getElementById('role-label').innerText = "ROLÜN: " + myRole.toUpperCase();
-        
-        conn.on('data', (data) => {
-            distance = data.d;
-            currentTaskIdx = data.idx;
-            render();
-        });
-
         render();
     }
 
@@ -128,7 +121,7 @@
         const isMyTurn = (myRole === 'hirsiz' && currentTaskIdx % 2 === 0) || (myRole === 'ajan' && currentTaskIdx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = "SENİN SIRAN! HAMLE YAP.";
+            document.getElementById('turn-info').innerText = ">> SENİN SIRAN! HAMLE YAP.";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
@@ -138,19 +131,17 @@
                 area.appendChild(b);
             });
         } else {
-            document.getElementById('turn-info').innerText = "RAKİP ANALİZ YAPIYOR...";
-            document.getElementById('q-text').innerText = "Siber veri transferi bekleniyor...";
+            document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ YAPIYOR...";
+            document.getElementById('q-text').innerText = "Veri bekleniyor...";
         }
 
-        // Kazanma Kontrolü
-        if(distance >= 95) { alert("DR. PARALEL KAÇTI! HIRSIZ KAZANDI."); location.reload(); }
-        if(distance <= 5) { alert("AJAN ENKA KELEPÇEYİ TAKTI! AJAN KAZANDI."); location.reload(); }
+        if(distance >= 95) { alert("DR. PARALEL KAÇTI!"); location.reload(); }
+        if(distance <= 5) { alert("AJAN ENKA YAKALADI!"); location.reload(); }
     }
 
     function sendMove(correct) {
-        if(myRole === 'hirsiz') distance += (correct ? 12 : -8);
-        else distance -= (correct ? 15 : -10);
-        
+        if(myRole === 'hirsiz') distance += (correct ? 10 : -5);
+        else distance -= (correct ? 12 : -7);
         currentTaskIdx++;
         conn.send({ d: distance, idx: currentTaskIdx });
         render();
