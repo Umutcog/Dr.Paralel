@@ -2,8 +2,9 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: UNIVERSAL CONNECT</title>
-    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <title>NEBULA: CLOUD_SYNC OPERASYONU</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --win-blue: #008080; --win-gray: #c0c0c0; }
@@ -11,25 +12,25 @@
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .win-dialog { background: var(--win-gray); border: 2px outset white; width: 320px; padding: 15px; box-shadow: 8px 8px 0 black; text-align: center; }
         #desktop { display: none; width: 100vw; height: 100vh; }
-        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
+        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
         .win-title { background: navy; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: left; }
-        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 320px; }
+        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 350px; }
         .btn-win { background: var(--win-gray); border: 2px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 18px; width: 100%; margin-top: 5px; }
         .dist-track { height: 12px; background: #222; border: 1px solid #0f0; position: relative; margin: 15px 0; }
         #icon-player { position: absolute; left: 0; top: -10px; transition: 1s ease; font-size: 22px; }
         #icon-dr { position: absolute; left: 50%; top: -10px; transition: 1s ease; font-size: 22px; }
-        input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 18px; text-align: center; }
+        input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">SİSTEM_UYUMLULUK_MODU</div>
-            <div id="my-id-display" style="font-family: 'VT323'; font-size: 20px;">BAĞLANTI BEKLENİYOR...</div>
-            <input type="text" id="target-id" placeholder="RAKİP KODU">
-            <button class="btn-win" onclick="connectToPeer()">BAĞLAN (APPLE DESTEKLİ)</button>
-            <p style="font-size: 10px; color: #333; margin-top: 10px;">*Apple kullanıcıları bağlantı sonrası ekrana bir kez dokunmalıdır.</p>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">BULUT_GIRIS_PANELI</div>
+            <div id="status-msg">BULUTA BAGLANILIYOR...</div>
+            <input type="text" id="room-id" placeholder="4 HANELI ODA KODU">
+            <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
+            <p style="font-size:11px; margin-top:10px;">*Aynı kodu giren iki öğrenci eşleşir.</p>
         </div>
     </div>
 
@@ -38,7 +39,7 @@
             <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">VERİ AKIŞI BAŞLIYOR...</div>
+                    <div id="turn-info">VERİ AKIŞI AKTİF...</div>
                     <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:10px;">
@@ -50,106 +51,107 @@
     </div>
 
 <script>
-    let peer, conn;
-    let myRole = ''; 
-    let distance = 50; 
-    let currentTaskIdx = 0;
+    // PAYLAŞTIĞIN FIREBASE BİLGİLERİ ENTEGRE EDİLDİ
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
+        authDomain: "drparalel-1f0cd.firebaseapp.com",
+        databaseURL: "https://drparalel-1f0cd-default-rtdb.firebaseio.com",
+        projectId: "drparalel-1f0cd",
+        storageBucket: "drparalel-1f0cd.firebasestorage.app",
+        messagingSenderId: "464154880090",
+        appId: "1:464154880090:web:bd2f540f76529d3ccc1063"
+    };
 
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    let myRole = ''; 
+    let roomId = '';
+    let state = { d: 50, idx: 0 };
+
+    // BASINÇ VE RÜZGARLAR GÖREVLERİ (11-20)
     const tasks = [
-        { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
-        { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
-        { q: "Ekvator'daki termik basınç kuşağı?", opts: ["TERMİK ALÇAK B.", "DİNAMİK YÜKSEK B."], ans: 0 }
+        { q: "45° enlemindeki normal basınç değeri nedir?", opts: ["1013 MB", "1033 MB"], ans: 0 },
+        { q: "Isınan havada oluşan basınç tipi hangisidir?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
+        { q: "Hava akımının merkezden dışa doğru olduğu basınç?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
+        { q: "K.Y.K'de rüzgarın sağa saptığı basınç merkezi?", opts: ["YÜKSEK BASINÇ", "ALÇAK BASINÇ"], ans: 0 },
+        { q: "Ekvator'daki sürekli alçak basınç kuşağının kökeni?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
+        { q: "30° enleminde havanın alçalıp yığıldığı kuşak?", opts: ["DİNAMİK Y.B.", "TERMİK Y.B."], ans: 0 },
+        { q: "Rüzgarın hızını belirleyen basınç farkı gücü?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
+        { q: "Eş basınç eğrilerinin coğrafi adı nedir?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
+        { q: "Gündüz vadiden dağa doğru esen yerel rüzgar?", opts: ["VADİ MELTEMİ", "DAĞ MELTEMİ"], ans: 0 },
+        { q: "Dağdan aşağı inerken ısınan kuru ve sıcak rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
     ];
 
-    const shortId = Math.random().toString(36).substr(2, 4).toUpperCase();
-
-    // APPLE-ANDROID UYUMU İÇİN ÖZEL CONFIG
-    peer = new Peer(shortId, {
-        config: {
-            'iceServers': [
-                { url: 'stun:stun.l.google.com:19302' },
-                { url: 'stun:stun1.l.google.com:19302' },
-                { url: 'stun:stun.services.mozilla.com' }
-            ],
-            'sdpSemantics': 'unified-plan', // Apple Safari uyumu
-            'iceCandidatePoolSize': 10
-        }
-    });
-
-    peer.on('open', (id) => {
-        document.getElementById('my-id-display').innerText = "KODUNUZ: " + id;
-    });
-
-    peer.on('connection', (c) => {
-        conn = c;
-        myRole = 'ajan';
-        setupEvents();
-    });
-
-    function connectToPeer() {
-        const tid = document.getElementById('target-id').value.trim().toUpperCase();
-        if(!tid) return;
-        // Apple için serialization parametresi hayati önem taşır
-        conn = peer.connect(tid, { reliable: true, serialization: 'json' });
-        myRole = 'hirsiz';
-        setupEvents();
+    function joinRoom() {
+        roomId = document.getElementById('room-id').value.trim().toUpperCase();
+        if(!roomId) return alert("Lütfen kod girin!");
+        
+        const roomRef = db.ref('rooms/' + roomId);
+        roomRef.once('value', (snap) => {
+            if(!snap.exists()) {
+                myRole = 'hirsiz';
+                roomRef.set({ d: 50, idx: 0, p1: true });
+            } else {
+                myRole = 'ajan';
+                roomRef.update({ p2: true });
+            }
+            startSync();
+        });
     }
 
-    function setupEvents() {
-        conn.on('open', () => {
-            // Apple cihazları uyandırmak için boş paket gönderimi
-            conn.send({ type: 'PING' });
-            setTimeout(() => {
-                conn.send({ type: 'SYNC', d: distance, idx: currentTaskIdx });
-                initGame();
-            }, 1000);
-        });
+    function startSync() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'block';
+        document.getElementById('role-label').innerText = "OPERASYON: " + myRole.toUpperCase();
 
-        conn.on('data', (data) => {
-            if(data.type === 'SYNC' || data.type === 'MOVE') {
-                distance = data.d;
-                currentTaskIdx = data.idx;
-                if(document.getElementById('desktop').style.display === 'none') initGame();
+        db.ref('rooms/' + roomId).on('value', (snap) => {
+            const data = snap.val();
+            if(data) {
+                state.d = data.d;
+                state.idx = data.idx;
                 render();
             }
         });
     }
 
-    function initGame() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('desktop').style.display = 'block';
-        document.getElementById('role-label').innerText = "OPERASYON: " + myRole.toUpperCase();
-        render();
-    }
-
     function render() {
-        document.getElementById('icon-dr').style.left = distance + "%";
+        document.getElementById('icon-dr').style.left = state.d + "%";
         const area = document.getElementById('options-area');
         area.innerHTML = '';
-        const task = tasks[currentTaskIdx % tasks.length];
-        const isMyTurn = (myRole === 'hirsiz' && currentTaskIdx % 2 === 0) || (myRole === 'ajan' && currentTaskIdx % 2 !== 0);
+        const task = tasks[state.idx % tasks.length];
+        const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = ">> SIRA SENDE!";
+            document.getElementById('turn-info').innerText = ">> SIRA SENDE! KARŞI HAMLE YAP.";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
                 b.className = 'btn-win';
                 b.innerText = opt;
                 b.onclick = () => {
-                    if(myRole === 'hirsiz') distance += (i === task.ans ? 10 : -5);
-                    else distance -= (i === task.ans ? 12 : -7);
-                    currentTaskIdx++;
-                    conn.send({ type: 'MOVE', d: distance, idx: currentTaskIdx });
-                    render();
+                    let newD = state.d;
+                    if(myRole === 'hirsiz') newD += (i === task.ans ? 10 : -5);
+                    else newD -= (i === task.ans ? 12 : -7);
+                    db.ref('rooms/' + roomId).update({ d: newD, idx: state.idx + 1 });
                 };
                 area.appendChild(b);
             });
         } else {
             document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ YAPIYOR...";
-            document.getElementById('q-text').innerText = "Veri bekleniyor...";
+            document.getElementById('q-text').innerText = "Bulut verisi senkronize ediliyor...";
         }
+
+        if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); resetRoom(); }
+        if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); resetRoom(); }
     }
+
+    function resetRoom() {
+        db.ref('rooms/' + roomId).remove();
+        location.reload();
+    }
+
+    document.getElementById('status-msg').innerText = "BULUT SISTEMI HAZIR.";
 </script>
 </body>
 </html>
