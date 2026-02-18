@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: AUTO_CLEAN</title>
+    <title>NEBULA: SECURE_SYNC</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -25,11 +25,11 @@
 <body>
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">SİBER_TAKİP_MERKEZİ</div>
-            <div id="status-msg">GİRİŞ İÇİN KOD BELİRLEYİN</div>
-            <input type="text" id="room-id" placeholder="Örn: ENKA">
-            <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
-            <p style="font-size:11px; margin-top:8px;">*Bağlantı koparsa aynı kodla girip sıfırlayabilirsiniz.</p>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">GÜVENLİ_ERİŞİM.EXE</div>
+            <div id="status-msg" style="color:red; font-size:14px; margin-bottom:5px;"></div>
+            <input type="text" id="room-id" placeholder="ODA KODU">
+            <button class="btn-win" onclick="joinRoom()">BAĞLAN</button>
+            <p style="font-size:11px; margin-top:8px;">*Dolu odalara giriş yapılamaz.</p>
         </div>
     </div>
     <div id="desktop">
@@ -37,7 +37,7 @@
             <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">DURUM ANALİZ EDİLİYOR...</div>
+                    <div id="turn-info">VERİ ANALİZİ...</div>
                     <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:10px;">
@@ -80,23 +80,18 @@
         roomRef.once('value', (snap) => {
             const data = snap.val();
             
-            // ODA SIFIRLAMA MANTIĞI:
-            // 1. Oda hiç yoksa (Yeni oyun)
-            // 2. Oda var ama p2 henüz girmemişse (Ajan bekleniyor)
-            // 3. Oyun zaten bitmişse veya yarım kalmışsa (Sıfırla)
-            
             if (!data) {
                 myRole = 'hirsiz';
                 roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
+                startSync();
             } else if (data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
+                startSync();
             } else {
-                // EĞER ODA DOLUYSA (p1 ve p2 varsa), YENİDEN GİRİŞTE HER ŞEYİ SIFIRLA
-                myRole = 'hirsiz';
-                roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
+                // ODA BASKINI KORUMASI:
+                document.getElementById('status-msg').innerText = "BU ODA DOLU! BAŞKA KOD SEÇİN.";
             }
-            startSync();
         });
     }
 
@@ -118,12 +113,9 @@
         document.getElementById('icon-dr').style.left = state.d + "%";
         const area = document.getElementById('options-area');
         area.innerHTML = '';
-        
-        // Rakip gelene kadar bekleme ekranı
         if (!gameActive) {
-            document.getElementById('turn-info').innerText = "DİĞER OYUNCU BEKLENİYOR...";
-            document.getElementById('q-text').innerText = "Oda Kodu: " + roomId;
-            area.innerHTML = "<p style='color:red'>Lütfen arkadaşınızın aynı kodla girmesini bekleyin.</p>";
+            document.getElementById('turn-info').innerText = "RAKİP BEKLENİYOR...";
+            document.getElementById('q-text').innerText = "Kod: " + roomId;
             return;
         }
 
@@ -146,10 +138,9 @@
                 area.appendChild(b);
             });
         } else {
-            document.getElementById('turn-info').innerText = "RAKİP ANALİZ YAPIYOR...";
-            document.getElementById('q-text').innerText = "Siber veri senkronize ediliyor...";
+            document.getElementById('turn-info').innerText = "RAKİP ANALİZ EDİYOR...";
+            document.getElementById('q-text').innerText = "Siber takip aktif...";
         }
-
         if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
         if(state.d <= 5) { alert("AJAN YAKALADI!"); reset(); }
     }
