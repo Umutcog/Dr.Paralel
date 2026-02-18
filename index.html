@@ -2,34 +2,34 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: CROSS-PLATFORM OPS</title>
+    <title>NEBULA: UNIVERSAL CONNECT</title>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --win-blue: #008080; --win-gray: #c0c0c0; }
-        body { margin: 0; background-color: var(--win-blue); font-family: 'Tahoma', sans-serif; overflow: hidden; }
+        body { margin: 0; background: var(--win-blue); font-family: 'Tahoma', sans-serif; overflow: hidden; }
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 340px; padding: 15px; box-shadow: 8px 8px 0 black; text-align: center; }
+        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 320px; padding: 15px; box-shadow: 8px 8px 0 black; text-align: center; }
         #desktop { display: none; width: 100vw; height: 100vh; }
-        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
+        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
         .win-title { background: navy; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: left; }
-        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 300px; }
+        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 320px; }
         .btn-win { background: var(--win-gray); border: 2px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 18px; width: 100%; margin-top: 5px; }
         .dist-track { height: 12px; background: #222; border: 1px solid #0f0; position: relative; margin: 15px 0; }
         #icon-player { position: absolute; left: 0; top: -10px; transition: 1s ease; font-size: 22px; }
         #icon-dr { position: absolute; left: 50%; top: -10px; transition: 1s ease; font-size: 22px; }
-        input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 22px; text-align: center; text-transform: uppercase; }
+        input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 18px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">CROSS_PLATFORM_CORE</div>
-            <div id="my-id-display" style="font-family: 'VT323'; font-size: 24px; color: blue; border: 1px inset white; background: #eee; padding: 5px;">KOD ÜRETİLİYOR...</div>
-            <input type="text" id="target-id" placeholder="4 HANELİ KOD">
-            <button class="btn-win" onclick="connectToPeer()">BAĞLANTIYI BAŞLAT</button>
-            <div id="status-text" style="font-size: 11px; margin-top: 10px;">Bağlantı tipi: Kararlı</div>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">SİSTEM_UYUMLULUK_MODU</div>
+            <div id="my-id-display" style="font-family: 'VT323'; font-size: 20px;">BAĞLANTI BEKLENİYOR...</div>
+            <input type="text" id="target-id" placeholder="RAKİP KODU">
+            <button class="btn-win" onclick="connectToPeer()">BAĞLAN (APPLE DESTEKLİ)</button>
+            <p style="font-size: 10px; color: #333; margin-top: 10px;">*Apple kullanıcıları bağlantı sonrası ekrana bir kez dokunmalıdır.</p>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
             <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">SİSTEM ANALİZİ...</div>
+                    <div id="turn-info">VERİ AKIŞI BAŞLIYOR...</div>
                     <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:10px;">
@@ -56,25 +56,24 @@
     let currentTaskIdx = 0;
 
     const tasks = [
-        { q: "Hava olaylarının anlık durumu?", opts: ["HAVA DURUMU", "İKLİM"], ans: 0 },
-        { q: "Ozon tabakası hangi katmandadır?", opts: ["STRATOSFER", "TROPOSFER"], ans: 0 },
-        { q: "Kutup ışıklarının görüldüğü katman?", opts: ["TERMOSFER", "MEZOSFER"], ans: 0 }
+        { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
+        { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
+        { q: "Ekvator'daki termik basınç kuşağı?", opts: ["TERMİK ALÇAK B.", "DİNAMİK YÜKSEK B."], ans: 0 }
     ];
 
     const shortId = Math.random().toString(36).substr(2, 4).toUpperCase();
 
-    // APPLE VE ANDROID ARASI KÖPRÜ AYARLARI
+    // APPLE-ANDROID UYUMU İÇİN ÖZEL CONFIG
     peer = new Peer(shortId, {
         config: {
             'iceServers': [
                 { url: 'stun:stun.l.google.com:19302' },
                 { url: 'stun:stun1.l.google.com:19302' },
-                { url: 'stun:stun2.l.google.com:19302' },
                 { url: 'stun:stun.services.mozilla.com' }
             ],
-            'sdpSemantics': 'unified-plan'
-        },
-        debug: 3
+            'sdpSemantics': 'unified-plan', // Apple Safari uyumu
+            'iceCandidatePoolSize': 10
+        }
     });
 
     peer.on('open', (id) => {
@@ -89,35 +88,31 @@
 
     function connectToPeer() {
         const tid = document.getElementById('target-id').value.trim().toUpperCase();
-        if(!tid) return alert("Kod gerekli!");
-        conn = peer.connect(tid, { 
-            reliable: true,
-            // Apple kısıtlamalarını aşmak için zorunlu parametre
-            serialization: 'json' 
-        });
+        if(!tid) return;
+        // Apple için serialization parametresi hayati önem taşır
+        conn = peer.connect(tid, { reliable: true, serialization: 'json' });
         myRole = 'hirsiz';
         setupEvents();
     }
 
     function setupEvents() {
         conn.on('open', () => {
-            // Apple cihazlar için veri akışını zorla başlatma
+            // Apple cihazları uyandırmak için boş paket gönderimi
+            conn.send({ type: 'PING' });
             setTimeout(() => {
-                conn.send({ type: 'FORCE_START', d: distance, idx: currentTaskIdx });
+                conn.send({ type: 'SYNC', d: distance, idx: currentTaskIdx });
                 initGame();
-            }, 800);
+            }, 1000);
         });
 
         conn.on('data', (data) => {
-            if(data.type === 'FORCE_START' || data.type === 'MOVE') {
+            if(data.type === 'SYNC' || data.type === 'MOVE') {
                 distance = data.d;
                 currentTaskIdx = data.idx;
                 if(document.getElementById('desktop').style.display === 'none') initGame();
                 render();
             }
         });
-        
-        conn.on('error', (err) => alert("Bağlantı hatası: " + err));
     }
 
     function initGame() {
@@ -135,7 +130,7 @@
         const isMyTurn = (myRole === 'hirsiz' && currentTaskIdx % 2 === 0) || (myRole === 'ajan' && currentTaskIdx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = "SIRA SENDE!";
+            document.getElementById('turn-info').innerText = ">> SIRA SENDE!";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
@@ -151,8 +146,8 @@
                 area.appendChild(b);
             });
         } else {
-            document.getElementById('turn-info').innerText = "RAKİP BEKLENİYOR...";
-            document.getElementById('q-text').innerText = "Hamle bekleniyor...";
+            document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ YAPIYOR...";
+            document.getElementById('q-text').innerText = "Veri bekleniyor...";
         }
     }
 </script>
