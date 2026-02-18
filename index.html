@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: AGENT vs HACKER</title>
+    <title>NEBULA: CROSS-PLATFORM OPS</title>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
@@ -15,26 +15,21 @@
         .win-title { background: navy; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: left; }
         .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 300px; }
         .btn-win { background: var(--win-gray); border: 2px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 18px; width: 100%; margin-top: 5px; }
-        .btn-win:active { border-style: inset; }
         .dist-track { height: 12px; background: #222; border: 1px solid #0f0; position: relative; margin: 15px 0; }
         #icon-player { position: absolute; left: 0; top: -10px; transition: 1s ease; font-size: 22px; }
         #icon-dr { position: absolute; left: 50%; top: -10px; transition: 1s ease; font-size: 22px; }
         input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 22px; text-align: center; text-transform: uppercase; }
-        #status-light { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: red; margin-right: 5px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">OPERASYON_BAGLANTI_PANELI</div>
-            <div id="my-id-display" style="font-family: 'VT323'; font-size: 24px; color: blue; border: 1px inset white; background: #eee; padding: 5px;">...</div>
-            <p style="font-size: 12px; margin: 10px 0;">Yukarıdaki kodu rakibine ver veya rakibinin kodunu aşağıya yaz:</p>
-            <input type="text" id="target-id" placeholder="4 HANELI KOD">
-            <button class="btn-win" onclick="connectToPeer()">BAGLANTIYI BASLAT</button>
-            <div id="connection-status" style="font-size: 11px; margin-top: 10px; color: #444;">
-                <span id="status-light"></span> <span id="status-text">Sinyal Aranıyor</span>
-            </div>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">CROSS_PLATFORM_CORE</div>
+            <div id="my-id-display" style="font-family: 'VT323'; font-size: 24px; color: blue; border: 1px inset white; background: #eee; padding: 5px;">KOD ÜRETİLİYOR...</div>
+            <input type="text" id="target-id" placeholder="4 HANELİ KOD">
+            <button class="btn-win" onclick="connectToPeer()">BAĞLANTIYI BAŞLAT</button>
+            <div id="status-text" style="font-size: 11px; margin-top: 10px;">Bağlantı tipi: Kararlı</div>
         </div>
     </div>
 
@@ -43,7 +38,7 @@
             <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">VERİ AKIŞI ANALİZ EDİLİYOR...</div>
+                    <div id="turn-info">SİSTEM ANALİZİ...</div>
                     <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:10px;">
@@ -66,22 +61,24 @@
         { q: "Kutup ışıklarının görüldüğü katman?", opts: ["TERMOSFER", "MEZOSFER"], ans: 0 }
     ];
 
-    // 4 HANELİ KISA KOD ÜRETİCİ
     const shortId = Math.random().toString(36).substr(2, 4).toUpperCase();
 
+    // APPLE VE ANDROID ARASI KÖPRÜ AYARLARI
     peer = new Peer(shortId, {
         config: {
             'iceServers': [
                 { url: 'stun:stun.l.google.com:19302' },
-                { url: 'stun:stun1.l.google.com:19302' }
-            ]
-        }
+                { url: 'stun:stun1.l.google.com:19302' },
+                { url: 'stun:stun2.l.google.com:19302' },
+                { url: 'stun:stun.services.mozilla.com' }
+            ],
+            'sdpSemantics': 'unified-plan'
+        },
+        debug: 3
     });
 
     peer.on('open', (id) => {
         document.getElementById('my-id-display').innerText = "KODUNUZ: " + id;
-        document.getElementById('status-light').style.background = "orange";
-        document.getElementById('status-text').innerText = "Sinyal Hazır";
     });
 
     peer.on('connection', (c) => {
@@ -93,19 +90,22 @@
     function connectToPeer() {
         const tid = document.getElementById('target-id').value.trim().toUpperCase();
         if(!tid) return alert("Kod gerekli!");
-        conn = peer.connect(tid, { reliable: true });
+        conn = peer.connect(tid, { 
+            reliable: true,
+            // Apple kısıtlamalarını aşmak için zorunlu parametre
+            serialization: 'json' 
+        });
         myRole = 'hirsiz';
         setupEvents();
     }
 
     function setupEvents() {
         conn.on('open', () => {
-            document.getElementById('status-light').style.background = "lime";
-            document.getElementById('status-text').innerText = "Bağlı";
+            // Apple cihazlar için veri akışını zorla başlatma
             setTimeout(() => {
                 conn.send({ type: 'FORCE_START', d: distance, idx: currentTaskIdx });
                 initGame();
-            }, 500);
+            }, 800);
         });
 
         conn.on('data', (data) => {
@@ -116,6 +116,8 @@
                 render();
             }
         });
+        
+        conn.on('error', (err) => alert("Bağlantı hatası: " + err));
     }
 
     function initGame() {
@@ -150,7 +152,7 @@
             });
         } else {
             document.getElementById('turn-info').innerText = "RAKİP BEKLENİYOR...";
-            document.getElementById('q-text').innerText = "Karşı tarafın hamlesi bekleniyor...";
+            document.getElementById('q-text').innerText = "Hamle bekleniyor...";
         }
     }
 </script>
