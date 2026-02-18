@@ -13,19 +13,18 @@
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .win-dialog { background: var(--win-gray); border: 2px outset white; width: 340px; padding: 15px; box-shadow: 10px 10px 0 black; text-align: center; }
         
-        /* İSTEDİĞİN HAVALI BAŞLIK BURADA */
+        /* İSTEDİĞİN HAVALI BAŞLIK */
         .win-header { background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan)); color: black; padding: 6px; font-weight: bold; text-align: left; font-size: 15px; margin-bottom: 15px; letter-spacing: 1px; border: 1px solid black; }
         
         #desktop { display: none; width: 100vw; height: 100vh; }
         .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
         .win-title { background: navy; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: left; }
         .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 380px; }
-        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; margin-top: 8px; font-weight: bold; text-transform: uppercase; }
-        .btn-win:hover { background: #eee; }
+        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; margin-top: 8px; font-weight: bold; }
         .dist-track { height: 15px; background: #222; border: 1px solid #0f0; position: relative; margin: 20px 0; border-radius: 10px; }
         #icon-player { position: absolute; left: 0; top: -12px; transition: 1s ease; font-size: 24px; z-index: 10; }
         #icon-dr { position: absolute; left: 50%; top: -12px; transition: 1s ease; font-size: 24px; z-index: 10; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 22px; text-align: center; background: #fff; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 22px; text-align: center; }
         #status-msg { color: #d00; font-weight: bold; min-height: 20px; font-size: 14px; margin-bottom: 5px; }
     </style>
 </head>
@@ -35,7 +34,7 @@
         <div class="win-dialog">
             <div class="win-header">>> NEBULA: SİBER_TAKİP_MODU</div>
             <div id="status-msg"></div>
-            <input type="text" id="room-id" placeholder="ODA KODUNU BELİRLE">
+            <input type="text" id="room-id" placeholder="ODANI BELİRLE (ÖRN: ENKA)">
             <button class="btn-win" onclick="joinRoom()">SİSTEME_SIZ_>></button>
             <div style="font-size:10px; margin-top:10px; color:#444; font-family:monospace;">[BAĞLANTI: GÜVENLİ | ŞİFRELEME: AKTİF]</div>
         </div>
@@ -61,6 +60,7 @@
     </div>
 
 <script>
+    // SİZİN FIREBASE BİLGİLERİNİZ
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -75,17 +75,15 @@
     const db = firebase.database();
     let myRole = '', roomId = '', state = { d: 50, idx: 0 };
 
+    // BASINÇ VE RÜZGARLAR GÖREVLERİ
     const tasks = [
         { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
         { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
         { q: "Hava merkezden dışa doğru esiyorsa?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
-        { q: "K.Y.K'de rüzgarın sağa saptığı merkez?", opts: ["YÜKSEK BASINÇ", "ALÇAK BASINÇ"], ans: 0 },
         { q: "Ekvator'daki sürekli alçak basınç kuşağı?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
-        { q: "30° enlemindeki hava yığılması?", opts: ["DİNAMİK Y.B.", "TERMİK Y.B."], ans: 0 },
-        { q: "Rüzgarın hızını belirleyen fark?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
-        { q: "Haritadaki eş basınç eğrileri?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
-        { q: "Gündüz denizden karaya esen yerel rüzgar?", opts: ["DENİZ MELTEMİ", "KARA MELTEMİ"], ans: 0 },
-        { q: "Dağdan aşağı ısınarak inen rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
+        { q: "Rüzgar hızını belirleyen basınç farkı?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
+        { q: "Haritadaki eş basınç eğrilerinin adı?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
+        { q: "Dağdan aşağı ısınarak inen kuru rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
     ];
 
     function joinRoom() {
@@ -104,7 +102,7 @@
                 roomRef.update({ p2: true });
                 startSync();
             } else {
-                document.getElementById('status-msg').innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
+                document.getElementById('status-msg').innerText = "BAĞLANTI REDDEDİLDİ: ODA DOLU!";
             }
         });
     }
@@ -112,10 +110,14 @@
     function startSync() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('desktop').style.display = 'block';
-        document.getElementById('role-label').innerText = "BAĞLANTI: " + myRole.toUpperCase();
+        document.getElementById('role-label').innerText = "MOD: " + myRole.toUpperCase();
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
-            if(data) { state.d = data.d; state.idx = data.idx; render(data.p1 && data.p2); }
+            if(data) { 
+                state.d = data.d; 
+                state.idx = data.idx; 
+                render(data.p1 && data.p2); 
+            }
         });
     }
 
@@ -126,13 +128,13 @@
         if (!gameActive) {
             document.getElementById('turn-info').innerText = ">> RAKİP SİNYALİ BEKLENİYOR...";
             document.getElementById('q-text').innerText = "KOD: " + roomId;
-            area.innerHTML = "<p style='color:#005500'>Operasyonun başlaması için arkadaşının bağlanması gerekiyor.</p>";
             return;
         }
         const task = tasks[state.idx % tasks.length];
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
+        
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = ">> SENİN SIRAN! HAMLENİ YAP.";
+            document.getElementById('turn-info').innerText = ">> SIRADAKİ HAMLE SENDE!";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
@@ -148,10 +150,10 @@
             });
         } else {
             document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ EDİYOR...";
-            document.getElementById('q-text').innerText = "Şifreli veri akışı senkronize ediliyor...";
+            document.getElementById('q-text').innerText = "Şifreli veri senkronizasyonu aktif...";
         }
         if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
-        if(state.d <= 5) { alert("AJAN YAKALADI! OPERASYON BAŞARILI."); reset(); }
+        if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); reset(); }
     }
     function reset() { db.ref('rooms/' + roomId).remove(); setTimeout(() => { location.reload(); }, 500); }
 </script>
