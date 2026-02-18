@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: CLOUD_SYNC OPERASYONU</title>
+    <title>NEBULA: SMART_SYNC</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -23,23 +23,20 @@
     </style>
 </head>
 <body>
-
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">BULUT_GIRIS_PANELI</div>
-            <div id="status-msg">BULUTA BAGLANILIYOR...</div>
-            <input type="text" id="room-id" placeholder="4 HANELI ODA KODU">
-            <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
-            <p style="font-size:11px; margin-top:10px;">*Aynı kodu giren iki öğrenci eşleşir.</p>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">BULUT_ODASI_YONETIMI</div>
+            <div id="status-msg">ODA KODUNU GİRİN</div>
+            <input type="text" id="room-id" placeholder="Örn: ENKA">
+            <button class="btn-win" onclick="joinRoom()">ODAYA GIR VE SIFIRLA</button>
         </div>
     </div>
-
     <div id="desktop">
         <div class="window">
             <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">VERİ AKIŞI AKTİF...</div>
+                    <div id="turn-info">DURUM ANALIZ EDILIYOR...</div>
                     <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:10px;">
@@ -49,9 +46,7 @@
             </div>
         </div>
     </div>
-
 <script>
-    // PAYLAŞTIĞIN FIREBASE BİLGİLERİ ENTEGRE EDİLDİ
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -64,37 +59,36 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    
-    let myRole = ''; 
-    let roomId = '';
-    let state = { d: 50, idx: 0 };
+    let myRole = '', roomId = '', state = { d: 50, idx: 0 };
 
-    // BASINÇ VE RÜZGARLAR GÖREVLERİ (11-20)
     const tasks = [
-        { q: "45° enlemindeki normal basınç değeri nedir?", opts: ["1013 MB", "1033 MB"], ans: 0 },
-        { q: "Isınan havada oluşan basınç tipi hangisidir?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
-        { q: "Hava akımının merkezden dışa doğru olduğu basınç?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
-        { q: "K.Y.K'de rüzgarın sağa saptığı basınç merkezi?", opts: ["YÜKSEK BASINÇ", "ALÇAK BASINÇ"], ans: 0 },
-        { q: "Ekvator'daki sürekli alçak basınç kuşağının kökeni?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
-        { q: "30° enleminde havanın alçalıp yığıldığı kuşak?", opts: ["DİNAMİK Y.B.", "TERMİK Y.B."], ans: 0 },
-        { q: "Rüzgarın hızını belirleyen basınç farkı gücü?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
-        { q: "Eş basınç eğrilerinin coğrafi adı nedir?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
-        { q: "Gündüz vadiden dağa doğru esen yerel rüzgar?", opts: ["VADİ MELTEMİ", "DAĞ MELTEMİ"], ans: 0 },
-        { q: "Dağdan aşağı inerken ısınan kuru ve sıcak rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
+        { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
+        { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
+        { q: "Hava merkezden dışa esiyorsa?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
+        { q: "Ekvator'daki alçak basınç kuşağı?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
+        { q: "Rüzgar hızını belirleyen fark?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
+        { q: "Eş basınç eğrilerinin adı?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
+        { q: "Dağdan aşağı ısınarak esen rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
     ];
 
     function joinRoom() {
         roomId = document.getElementById('room-id').value.trim().toUpperCase();
-        if(!roomId) return alert("Lütfen kod girin!");
-        
+        if(!roomId) return;
         const roomRef = db.ref('rooms/' + roomId);
+        
         roomRef.once('value', (snap) => {
-            if(!snap.exists()) {
+            const data = snap.val();
+            // EĞER ODA DOLU VE OYUN BİTMİŞSE VEYA YENİ OYUNSA SIFIRLA
+            if(!data || (data.p1 && data.p2 && data.idx > 5)) {
                 myRole = 'hirsiz';
-                roomRef.set({ d: 50, idx: 0, p1: true });
-            } else {
+                roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
+            } else if(data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
+            } else {
+                // ODA ÇOKTAN DOLUYSA ÜZERİNE YAZ
+                myRole = 'hirsiz';
+                roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
             }
             startSync();
         });
@@ -103,15 +97,10 @@
     function startSync() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('desktop').style.display = 'block';
-        document.getElementById('role-label').innerText = "OPERASYON: " + myRole.toUpperCase();
-
+        document.getElementById('role-label').innerText = "ROLÜN: " + myRole.toUpperCase();
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
-            if(data) {
-                state.d = data.d;
-                state.idx = data.idx;
-                render();
-            }
+            if(data) { state.d = data.d; state.idx = data.idx; render(); }
         });
     }
 
@@ -123,7 +112,7 @@
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = ">> SIRA SENDE! KARŞI HAMLE YAP.";
+            document.getElementById('turn-info').innerText = "SIRA SENDE!";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
@@ -138,20 +127,17 @@
                 area.appendChild(b);
             });
         } else {
-            document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ YAPIYOR...";
-            document.getElementById('q-text').innerText = "Bulut verisi senkronize ediliyor...";
+            document.getElementById('turn-info').innerText = "RAKİP BEKLENİYOR...";
+            document.getElementById('q-text').innerText = "Siber veri senkronize ediliyor...";
         }
-
-        if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); resetRoom(); }
-        if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); resetRoom(); }
+        if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
+        if(state.d <= 5) { alert("AJAN YAKALADI!"); reset(); }
     }
 
-    function resetRoom() {
-        db.ref('rooms/' + roomId).remove();
-        location.reload();
+    function reset() { 
+        db.ref('rooms/' + roomId).remove(); 
+        setTimeout(() => { location.reload(); }, 500);
     }
-
-    document.getElementById('status-msg').innerText = "BULUT SISTEMI HAZIR.";
 </script>
 </body>
 </html>
