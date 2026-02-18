@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: SMART_SYNC</title>
+    <title>NEBULA: AUTO_CLEAN</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -25,10 +25,11 @@
 <body>
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">BULUT_ODASI_YONETIMI</div>
-            <div id="status-msg">ODA KODUNU GİRİN</div>
+            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">SİBER_TAKİP_MERKEZİ</div>
+            <div id="status-msg">GİRİŞ İÇİN KOD BELİRLEYİN</div>
             <input type="text" id="room-id" placeholder="Örn: ENKA">
-            <button class="btn-win" onclick="joinRoom()">ODAYA GIR VE SIFIRLA</button>
+            <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
+            <p style="font-size:11px; margin-top:8px;">*Bağlantı koparsa aynı kodla girip sıfırlayabilirsiniz.</p>
         </div>
     </div>
     <div id="desktop">
@@ -36,7 +37,7 @@
             <div class="win-title" id="role-label">NEBULA TERMINAL</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">DURUM ANALIZ EDILIYOR...</div>
+                    <div id="turn-info">DURUM ANALİZ EDİLİYOR...</div>
                     <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:10px;">
@@ -78,15 +79,20 @@
         
         roomRef.once('value', (snap) => {
             const data = snap.val();
-            // EĞER ODA DOLU VE OYUN BİTMİŞSE VEYA YENİ OYUNSA SIFIRLA
-            if(!data || (data.p1 && data.p2 && data.idx > 5)) {
+            
+            // ODA SIFIRLAMA MANTIĞI:
+            // 1. Oda hiç yoksa (Yeni oyun)
+            // 2. Oda var ama p2 henüz girmemişse (Ajan bekleniyor)
+            // 3. Oyun zaten bitmişse veya yarım kalmışsa (Sıfırla)
+            
+            if (!data) {
                 myRole = 'hirsiz';
                 roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
-            } else if(data.p1 && !data.p2) {
+            } else if (data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
             } else {
-                // ODA ÇOKTAN DOLUYSA ÜZERİNE YAZ
+                // EĞER ODA DOLUYSA (p1 ve p2 varsa), YENİDEN GİRİŞTE HER ŞEYİ SIFIRLA
                 myRole = 'hirsiz';
                 roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
             }
@@ -100,14 +106,27 @@
         document.getElementById('role-label').innerText = "ROLÜN: " + myRole.toUpperCase();
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
-            if(data) { state.d = data.d; state.idx = data.idx; render(); }
+            if(data) { 
+                state.d = data.d; 
+                state.idx = data.idx; 
+                render(data.p1 && data.p2); 
+            }
         });
     }
 
-    function render() {
+    function render(gameActive) {
         document.getElementById('icon-dr').style.left = state.d + "%";
         const area = document.getElementById('options-area');
         area.innerHTML = '';
+        
+        // Rakip gelene kadar bekleme ekranı
+        if (!gameActive) {
+            document.getElementById('turn-info').innerText = "DİĞER OYUNCU BEKLENİYOR...";
+            document.getElementById('q-text').innerText = "Oda Kodu: " + roomId;
+            area.innerHTML = "<p style='color:red'>Lütfen arkadaşınızın aynı kodla girmesini bekleyin.</p>";
+            return;
+        }
+
         const task = tasks[state.idx % tasks.length];
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
 
@@ -127,9 +146,10 @@
                 area.appendChild(b);
             });
         } else {
-            document.getElementById('turn-info').innerText = "RAKİP BEKLENİYOR...";
+            document.getElementById('turn-info').innerText = "RAKİP ANALİZ YAPIYOR...";
             document.getElementById('q-text').innerText = "Siber veri senkronize ediliyor...";
         }
+
         if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
         if(state.d <= 5) { alert("AJAN YAKALADI!"); reset(); }
     }
