@@ -2,52 +2,69 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>NEBULA: SECURE_SYNC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEBULA: SİBER_TAKİP</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --win-blue: #008080; --win-gray: #c0c0c0; }
+        :root { --win-blue: #008080; --win-gray: #c0c0c0; --neon-pink: #ff00ff; --neon-cyan: #00ffff; }
         body { margin: 0; background: var(--win-blue); font-family: 'Tahoma', sans-serif; overflow: hidden; }
+        
+        /* Giriş Ekranı - Cyberpunk Dokunuşu */
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 320px; padding: 15px; box-shadow: 8px 8px 0 black; text-align: center; }
+        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 340px; padding: 15px; box-shadow: 10px 10px 0 black; text-align: center; }
+        .win-header { background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan)); color: black; padding: 5px; font-weight: bold; text-align: left; font-size: 14px; margin-bottom: 15px; }
+        
         #desktop { display: none; width: 100vw; height: 100vh; }
         .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
         .win-title { background: navy; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: left; }
-        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 350px; }
-        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 18px; width: 100%; margin-top: 5px; }
-        .dist-track { height: 12px; background: #222; border: 1px solid #0f0; position: relative; margin: 15px 0; }
-        #icon-player { position: absolute; left: 0; top: -10px; transition: 1s ease; font-size: 22px; }
-        #icon-dr { position: absolute; left: 50%; top: -10px; transition: 1s ease; font-size: 22px; }
-        input { width: 90%; padding: 8px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 20px; text-align: center; }
+        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 380px; }
+        
+        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; margin-top: 8px; font-weight: bold; }
+        .btn-win:active { border: 2px inset white; }
+        
+        .dist-track { height: 15px; background: #222; border: 1px solid #0f0; position: relative; margin: 20px 0; border-radius: 10px; }
+        #icon-player { position: absolute; left: 0; top: -12px; transition: 1s ease; font-size: 24px; z-index: 10; }
+        #icon-dr { position: absolute; left: 50%; top: -12px; transition: 1s ease; font-size: 24px; z-index: 10; }
+        
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 22px; text-align: center; background: #eee; }
+        #status-msg { color: #d00; font-weight: bold; min-height: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
+
     <div id="login-screen">
         <div class="win-dialog">
-            <div style="background:navy; color:white; padding:2px; font-weight:bold; margin-bottom:10px; text-align:left;">GÜVENLİ_ERİŞİM.EXE</div>
-            <div id="status-msg" style="color:red; font-size:14px; margin-bottom:5px;"></div>
-            <input type="text" id="room-id" placeholder="ODA KODU">
-            <button class="btn-win" onclick="joinRoom()">BAĞLAN</button>
-            <p style="font-size:11px; margin-top:8px;">*Dolu odalara giriş yapılamaz.</p>
+            <div class="win-header">>> NEBULA: SİBER_TAKİP_MODU</div>
+            <div id="status-msg"></div>
+            <input type="text" id="room-id" placeholder="ODA KODU (Örn: ENKA)">
+            <button class="btn-win" onclick="joinRoom()">SİSTEME_SIZ_>></button>
+            <p style="font-size:11px; margin-top:10px; color:#555;">[GÜVENLİ BAĞLANTI AKTİF]</p>
         </div>
     </div>
+
     <div id="desktop">
         <div class="window">
-            <div class="win-title" id="role-label">NEBULA TERMINAL</div>
+            <div class="win-title" id="role-label">NEBULA TERMINAL v16.0</div>
             <div class="win-body">
-                <div style="background:black; color:#0f0; padding:8px; border:2px inset white;">
-                    <div id="turn-info">VERİ ANALİZİ...</div>
-                    <div class="dist-track"><div id="icon-player">🕵️</div><div id="icon-dr">😈</div></div>
+                <div style="background:black; color:#0f0; padding:10px; border:2px inset white; border-radius: 5px;">
+                    <div id="turn-info">VERİ AKIŞI BEKLENİYOR...</div>
+                    <div class="dist-track">
+                        <div id="icon-player" title="Ajan ENKA">🕵️</div>
+                        <div id="icon-dr" title="Dr. Paralel">😈</div>
+                    </div>
                 </div>
-                <div id="game-area" style="color:black; margin-top:10px;">
-                    <h2 id="q-text" style="font-size:24px;">Yükleniyor...</h2>
+                <div id="game-area" style="color:black; margin-top:15px; text-align:center;">
+                    <h2 id="q-text" style="font-size:26px; margin-bottom:15px;">Yükleniyor...</h2>
                     <div id="options-area"></div>
                 </div>
             </div>
         </div>
     </div>
+
 <script>
+    // FIREBASE ENTEGRASYONU
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -62,14 +79,18 @@
     const db = firebase.database();
     let myRole = '', roomId = '', state = { d: 50, idx: 0 };
 
+    // BASINÇ VE RÜZGARLAR (11-20. GÖREVLER)
     const tasks = [
         { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
         { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
-        { q: "Hava merkezden dışa esiyorsa?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
-        { q: "Ekvator'daki alçak basınç kuşağı?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
-        { q: "Rüzgar hızını belirleyen fark?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
-        { q: "Eş basınç eğrilerinin adı?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
-        { q: "Dağdan aşağı ısınarak esen rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
+        { q: "Hava merkezden dışa doğru esiyorsa?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
+        { q: "K.Y.K'de rüzgarın sağa saptığı merkez?", opts: ["YÜKSEK BASINÇ", "ALÇAK BASINÇ"], ans: 0 },
+        { q: "Ekvator'daki sürekli alçak basınç kuşağı?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
+        { q: "30° enlemindeki hava yığılması?", opts: ["DİNAMİK Y.B.", "TERMİK Y.B."], ans: 0 },
+        { q: "Rüzgarın hızını belirleyen fark?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
+        { q: "Haritadaki eş basınç eğrileri?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
+        { q: "Gündüz denizden karaya esen yerel rüzgar?", opts: ["DENİZ MELTEMİ", "KARA MELTEMİ"], ans: 0 },
+        { q: "Dağdan aşağı ısınarak inen rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
     ];
 
     function joinRoom() {
@@ -79,7 +100,6 @@
         
         roomRef.once('value', (snap) => {
             const data = snap.val();
-            
             if (!data) {
                 myRole = 'hirsiz';
                 roomRef.set({ d: 50, idx: 0, p1: true, p2: false });
@@ -89,8 +109,7 @@
                 roomRef.update({ p2: true });
                 startSync();
             } else {
-                // ODA BASKINI KORUMASI:
-                document.getElementById('status-msg').innerText = "BU ODA DOLU! BAŞKA KOD SEÇİN.";
+                document.getElementById('status-msg').innerText = "ERİŞİM REDDEDİLDİ: ODA DOLU!";
             }
         });
     }
@@ -98,7 +117,8 @@
     function startSync() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('desktop').style.display = 'block';
-        document.getElementById('role-label').innerText = "ROLÜN: " + myRole.toUpperCase();
+        document.getElementById('role-label').innerText = "OPERASYON MODU: " + myRole.toUpperCase();
+        
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
             if(data) { 
@@ -113,9 +133,11 @@
         document.getElementById('icon-dr').style.left = state.d + "%";
         const area = document.getElementById('options-area');
         area.innerHTML = '';
+        
         if (!gameActive) {
-            document.getElementById('turn-info').innerText = "RAKİP BEKLENİYOR...";
-            document.getElementById('q-text').innerText = "Kod: " + roomId;
+            document.getElementById('turn-info').innerText = ">> RAKİP SİNYALİ BEKLENİYOR...";
+            document.getElementById('q-text').innerText = "KOD: " + roomId;
+            area.innerHTML = "<p style='color:blue'>Arkadaşın aynı kodu girdiğinde operasyon başlayacak.</p>";
             return;
         }
 
@@ -123,7 +145,7 @@
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = "SIRA SENDE!";
+            document.getElementById('turn-info').innerText = ">> SIRA SENDE! HIZLI KARAR VER.";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
@@ -138,11 +160,12 @@
                 area.appendChild(b);
             });
         } else {
-            document.getElementById('turn-info').innerText = "RAKİP ANALİZ EDİYOR...";
-            document.getElementById('q-text').innerText = "Siber takip aktif...";
+            document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ YAPIYOR...";
+            document.getElementById('q-text').innerText = "Şifreli veri akışı senkronize ediliyor...";
         }
-        if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
-        if(state.d <= 5) { alert("AJAN YAKALADI!"); reset(); }
+
+        if(state.d >= 95) { alert("DR. PARALEL BULUTLARA KAÇTI!"); reset(); }
+        if(state.d <= 5) { alert("AJAN ENKA YAKALADI! OPERASYON BAŞARILI."); reset(); }
     }
 
     function reset() { 
