@@ -13,7 +13,7 @@
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .win-dialog { background: var(--win-gray); border: 2px outset white; width: 340px; padding: 15px; box-shadow: 10px 10px 0 black; text-align: center; }
         
-        /* İSTEDİĞİN HAVALI BAŞLIK */
+        /* .EXE TAMAMEN KALDIRILDI - YENİ HAVALI BAŞLIK */
         .win-header { background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan)); color: black; padding: 6px; font-weight: bold; text-align: left; font-size: 15px; margin-bottom: 15px; letter-spacing: 1px; border: 1px solid black; }
         
         #desktop { display: none; width: 100vw; height: 100vh; }
@@ -36,16 +36,16 @@
             <div id="status-msg"></div>
             <input type="text" id="room-id" placeholder="ODANI BELİRLE (ÖRN: ENKA)">
             <button class="btn-win" onclick="joinRoom()">SİSTEME_SIZ_>></button>
-            <div style="font-size:10px; margin-top:10px; color:#444; font-family:monospace;">[BAĞLANTI: GÜVENLİ | ŞİFRELEME: AKTİF]</div>
+            <div style="font-size:10px; margin-top:10px; color:#444; font-family:monospace;">[SİNYAL: AKTİF | ŞİFRELEME: GÜVENLİ]</div>
         </div>
     </div>
 
     <div id="desktop">
         <div class="window">
-            <div class="win-title" id="role-label">NEBULA TERMINAL v16.1</div>
+            <div class="win-title" id="role-label">NEBULA TERMINAL v16.2</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:10px; border:2px inset white; border-radius: 5px;">
-                    <div id="turn-info">SİNYAL ANALİZ EDİLİYOR...</div>
+                    <div id="turn-info">VERİ AKIŞI ANALİZ EDİLİYOR...</div>
                     <div class="dist-track">
                         <div id="icon-player">🕵️</div>
                         <div id="icon-dr">😈</div>
@@ -60,7 +60,6 @@
     </div>
 
 <script>
-    // SİZİN FIREBASE BİLGİLERİNİZ
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -75,7 +74,6 @@
     const db = firebase.database();
     let myRole = '', roomId = '', state = { d: 50, idx: 0 };
 
-    // BASINÇ VE RÜZGARLAR GÖREVLERİ
     const tasks = [
         { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
         { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
@@ -102,7 +100,7 @@
                 roomRef.update({ p2: true });
                 startSync();
             } else {
-                document.getElementById('status-msg').innerText = "BAĞLANTI REDDEDİLDİ: ODA DOLU!";
+                document.getElementById('status-msg').innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
             }
         });
     }
@@ -110,7 +108,7 @@
     function startSync() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('desktop').style.display = 'block';
-        document.getElementById('role-label').innerText = "MOD: " + myRole.toUpperCase();
+        document.getElementById('role-label').innerText = "OPERASYON MODU: " + myRole.toUpperCase();
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
             if(data) { 
@@ -150,7 +148,7 @@
             });
         } else {
             document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ EDİYOR...";
-            document.getElementById('q-text').innerText = "Şifreli veri senkronizasyonu aktif...";
+            document.getElementById('q-text').innerText = "Veri senkronizasyonu aktif...";
         }
         if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
         if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); reset(); }
