@@ -9,107 +9,46 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 
     <style>
-        body {
-            background-color: #008080;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        #login-screen, #game-screen {
-            background-color: #c0c0c0;
-            border: 4px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            padding: 20px;
-            width: 450px;
-            box-shadow: 10px 10px 0px #000000;
-            text-align: center;
-        }
-
-        #game-screen {
-            display: none; /* Oyun başlayana kadar gizli */
-        }
-
-        h2 {
-            background: linear-gradient(90deg, #ff00ff, #00ffff);
-            color: black;
-            padding: 10px;
-            border: 2px solid black;
-            font-size: 20px;
-            margin-bottom: 25px;
-        }
-
-        input {
-            width: 80%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 3px inset #ffffff;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        button {
-            width: 85%;
-            padding: 15px;
-            background-color: #c0c0c0;
-            border: 3px outset #ffffff;
-            cursor: pointer;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        button:active {
-            border: 3px inset #ffffff;
-        }
-
-        #status-message {
-            margin-top: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            height: 20px;
-        }
-
-        .footer-info {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #404040;
-            border-top: 1px solid #808080;
-            padding-top: 10px;
-        }
-
-        .question-box {
-            background: white;
-            padding: 15px;
-            border: 2px solid black;
-            margin-top: 10px;
-        }
+        body { background-color: #008080; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Courier New', Courier, monospace; }
+        #login-screen, #game-screen { background-color: #c0c0c0; border: 4px solid; border-color: #ffffff #808080 #808080 #ffffff; padding: 20px; width: 450px; box-shadow: 10px 10px 0px #000000; text-align: center; }
+        #game-screen { display: none; }
+        h2 { background: linear-gradient(90deg, #ff00ff, #00ffff); color: black; padding: 10px; border: 2px solid black; font-size: 18px; }
+        input { width: 80%; padding: 10px; margin-bottom: 20px; border: 3px inset #ffffff; font-size: 18px; text-align: center; }
+        button { width: 85%; padding: 12px; background-color: #c0c0c0; border: 3px outset #ffffff; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        #status-message { font-size: 14px; font-weight: bold; color: blue; }
+        .question-box { background: white; padding: 20px; border: 3px inset #808080; margin: 15px 0; min-height: 100px; font-size: 18px; font-weight: bold; }
+        .option-btn { background: #dcdcdc; border: 2px outset #ffffff; width: 100%; padding: 10px; margin: 5px 0; text-align: left; cursor: pointer; font-family: 'Courier New'; }
+        .footer-info { font-size: 11px; color: #404040; border-top: 1px solid #808080; padding-top: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <h2>>> NEBULA: SİBER_TAKİP_MODU</h2>
-        <input type="text" id="room-code" placeholder="ODA KODU (Örn: ENKA)" maxlength="10">
+        <input type="text" id="room-code" placeholder="ODA KODU (Örn: ENKA)">
         <button onclick="joinRoom()">SİSTEME_SIZ_>></button>
         <p id="status-message"></p>
         <div class="footer-info">[SİNYAL: AKTİF | ŞİFRELEME: GÜVENLİ]</div>
     </div>
 
     <div id="game-screen">
-        <h2>>> OPERASYON: BASINÇ VE RÜZGARLAR</h2>
-        <div class="question-box">
-            <p id="question-text">Sistem yükleniyor... Sorular hazırlanıyor...</p>
-            </div>
-        <div class="footer-info">Ajan: <span id="agent-id">...</span> | Durum: Aktif</div>
+        <h2 id="room-title">>> OPERASYON: BASINÇ</h2>
+        <div class="question-box" id="question-area">Yükleniyor...</div>
+        <div id="options-area"></div>
+        <div class="footer-info">AJAN: <span id="agent-id">...</span> | PUAN: <span id="score">0</span></div>
     </div>
 
     <script>
+        // SORU BANKASI (Hocam burayı istediğin gibi genişletebilirsin)
+        const soruBankasi = [
+            { soru: "Alçak basınç alanlarında hava hareketi nasıldır?", cevaplar: ["Merkezden çevreye", "Çevreden merkeze", "Yukarıdan aşağıya", "Yatay yönde"], dogru: 1 },
+            { soru: "Hangisi rüzgarın hızını ölçen alettir?", cevaplar: ["Barometre", "Higrometre", "Anemometre", "Termometre"], dogru: 2 },
+            { soru: "Ekvatorda yıl boyu görülen basınç türü hangisidir?", cevaplar: ["Termik Alçak Basınç", "Dinamik Yüksek Basınç", "Termik Yüksek Basınç", "Dinamik Alçak Basınç"], dogru: 0 }
+        ];
+
+        let mevcutSoruIndeksi = 0;
+        let puan = 0;
+
         const firebaseConfig = {
             apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
             authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -125,55 +64,61 @@
 
         function joinRoom() {
             const roomID = document.getElementById('room-code').value.toUpperCase();
-            const statusMsg = document.getElementById('status-message');
-
-            if (!roomID) {
-                statusMsg.innerText = "HATA: ODA KODU GEREKLİ!";
-                statusMsg.style.color = "red";
-                return;
-            }
+            if (!roomID) return;
 
             const roomRef = database.ref('rooms/' + roomID);
-            statusMsg.innerText = "Sisteme bağlanılıyor...";
-            statusMsg.style.color = "blue";
+            document.getElementById('status-message').innerText = "Sisteme sızılıyor...";
 
             roomRef.once('value', (snapshot) => {
-                const roomData = snapshot.val();
-                let playerSlot = "";
+                const data = snapshot.val();
+                let slot = (!data || !data.p1) ? "p1" : (!data.p2 ? "p2" : null);
 
-                if (!roomData || !roomData.p1) {
-                    playerSlot = "p1";
-                } else if (!roomData.p2) {
-                    playerSlot = "p2";
-                } else {
-                    statusMsg.innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
-                    statusMsg.style.color = "red";
+                if (!slot) {
+                    document.getElementById('status-message').innerText = "ODA DOLU!";
                     return;
                 }
 
-                const mySlotRef = database.ref('rooms/' + roomID + '/' + playerSlot);
-                mySlotRef.set(true);
-                mySlotRef.onDisconnect().remove();
+                const myRef = database.ref('rooms/' + roomID + '/' + slot);
+                myRef.set(true);
+                myRef.onDisconnect().remove();
 
-                statusMsg.innerText = "BAĞLANTI BAŞARILI. Sızılıyor...";
-                statusMsg.style.color = "green";
-
-                // 2 saniye sonra oyun ekranına geçiş yap
                 setTimeout(() => {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('game-screen').style.display = 'block';
-                    document.getElementById('agent-id').innerText = playerSlot.toUpperCase();
-                    
-                    // Soruları başlatma fonksiyonun buraya gelebilir:
-                    startMission(); 
-                }, 2000);
+                    document.getElementById('agent-id').innerText = slot.toUpperCase();
+                    document.getElementById('room-title').innerText = ">> ODA: " + roomID;
+                    soruGoster();
+                }, 1500);
             });
         }
 
-        function startMission() {
-            // Örnek: Soruyu değiştir
-            document.getElementById('question-text').innerText = "Soru 1: Alçak basınç alanlarında hava hareketi nasıldır?";
-            console.log("Görev başladı.");
+        function soruGoster() {
+            if (mevcutSoruIndeksi >= soruBankasi.length) {
+                document.getElementById('question-area').innerText = "GÖREV TAMAMLANDI! Tebrikler Ajan.";
+                document.getElementById('options-area').innerHTML = "";
+                return;
+            }
+
+            const data = soruBankasi[mevcutSoruIndeksi];
+            document.getElementById('question-area').innerText = data.soru;
+            
+            let html = "";
+            data.cevaplar.forEach((c, index) => {
+                html += `<button class="option-btn" onclick="cevapKontrol(${index})">${c}</button>`;
+            });
+            document.getElementById('options-area').innerHTML = html;
+        }
+
+        function cevapKontrol(secilen) {
+            if (secilen === soruBankasi[mevcutSoruIndeksi].dogru) {
+                puan += 10;
+                document.getElementById('score').innerText = puan;
+                alert("DOĞRU! Veri sızdırıldı.");
+            } else {
+                alert("YANLIŞ! Güvenlik duvarına takıldın.");
+            }
+            mevcutSoruIndeksi++;
+            soruGoster();
         }
     </script>
 </body>
