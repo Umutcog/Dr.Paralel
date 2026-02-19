@@ -2,21 +2,102 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dr. Paralel - Siber Takip Modu</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+
+    <style>
+        body {
+            background-color: #008080;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #game-container {
+            background-color: #c0c0c0;
+            border: 4px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 20px;
+            width: 450px;
+            box-shadow: 10px 10px 0px #000000;
+            text-align: center;
+        }
+
+        h2 {
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            color: black;
+            padding: 10px;
+            border: 2px solid black;
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 3px inset #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        button {
+            width: 85%;
+            padding: 15px;
+            background-color: #c0c0c0;
+            border: 3px outset #ffffff;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        button:active {
+            border: 3px inset #ffffff;
+        }
+
+        #status-message {
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            height: 20px;
+        }
+
+        .footer-info {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #404040;
+            border-top: 1px solid #808080;
+            padding-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
     <div id="game-container">
         <h2 id="nebula-status">>> NEBULA: SİBER_TAKİP_MODU</h2>
-        <input type="text" id="room-code" placeholder="ODA KODUNU GİRİN (Örn: ENKA)">
+        
+        <input type="text" id="room-code" placeholder="ODA KODU (Örn: ENKA)" maxlength="10">
+        
         <button onclick="joinRoom()">SİSTEME_SIZ_>></button>
+        
         <p id="status-message"></p>
+
+        <div class="footer-info">
+            [SİNYAL: AKTİF | ŞİFRELEME: GÜVENLİ]
+        </div>
     </div>
 
     <script>
-        // 1. Firebase Yapılandırması (Kısıtladığın API Key Buraya)
+        // Firebase Yapılandırması
         const firebaseConfig = {
             apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
             authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -36,42 +117,45 @@
             const statusMsg = document.getElementById('status-message');
 
             if (!roomID) {
-                alert("Lütfen bir oda kodu girin!");
+                statusMsg.innerText = "HATA: ODA KODU GEREKLİ!";
+                statusMsg.style.color = "red";
                 return;
             }
 
             const roomRef = database.ref('rooms/' + roomID);
 
-            // Odayı ve içindeki oyuncuları kontrol et
+            statusMsg.innerText = "Sisteme bağlanılıyor...";
+            statusMsg.style.color = "blue";
+
             roomRef.once('value', (snapshot) => {
                 const roomData = snapshot.val();
-                let playerKey = "";
+                let playerSlot = "";
 
+                // Oda doluluk kontrolü
                 if (!roomData || !roomData.p1) {
-                    playerKey = "p1"; // Oda boşsa p1 ol
+                    playerSlot = "p1";
                 } else if (!roomData.p2) {
-                    playerKey = "p2"; // p1 doluysa p2 ol
+                    playerSlot = "p2";
                 } else {
                     statusMsg.innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
                     statusMsg.style.color = "red";
                     return;
                 }
 
-                // --- KRİTİK NOKTA: onDisconnect ---
-                // Bu kod, bağlantı koptuğunda odayı otomatik temizler
-                const myRef = database.ref('rooms/' + roomID + '/' + playerKey);
+                // Seçilen slotun referansı
+                const mySlotRef = database.ref('rooms/' + roomID + '/' + playerSlot);
                 
-                // 1. Oyuncuyu odaya ekle
-                myRef.set(true);
+                // Oyuncuyu kaydet
+                mySlotRef.set(true);
 
-                // 2. Bağlantı koparsa (sekme kapanırsa) otomatik SİL
-                myRef.onDisconnect().remove();
+                // --- ÖNEMLİ: Bağlantı kesilince otomatik silme ---
+                mySlotRef.onDisconnect().remove();
 
                 statusMsg.innerText = "BAĞLANTI BAŞARILI. Sızılıyor...";
                 statusMsg.style.color = "green";
 
-                // Burada oyunun ana fonksiyonuna (startMatch gibi) geçiş yapabilirsin
-                console.log(roomID + " odasına " + playerKey + " olarak girildi.");
+                // Maç başladığında yapılabilecek işlemler buraya gelebilir
+                console.log(roomID + " odasına " + playerSlot + " olarak girildi.");
             });
         }
     </script>
