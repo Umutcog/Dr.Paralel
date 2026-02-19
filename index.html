@@ -3,123 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Paralel - Siber Takip Modu</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-
+    <title>NEBULA: SİBER_TAKİP</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #008080; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Courier New', Courier, monospace; }
-        #login-screen, #game-screen { background-color: #c0c0c0; border: 4px solid; border-color: #ffffff #808080 #808080 #ffffff; padding: 20px; width: 450px; box-shadow: 10px 10px 0px #000000; text-align: center; }
-        #game-screen { display: none; }
-        h2 { background: linear-gradient(90deg, #ff00ff, #00ffff); color: black; padding: 10px; border: 2px solid black; font-size: 18px; }
-        input { width: 80%; padding: 10px; margin-bottom: 20px; border: 3px inset #ffffff; font-size: 18px; text-align: center; }
-        button { width: 85%; padding: 12px; background-color: #c0c0c0; border: 3px outset #ffffff; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
-        #status-message { font-size: 14px; font-weight: bold; color: blue; }
-        .question-box { background: white; padding: 20px; border: 3px inset #808080; margin: 15px 0; min-height: 100px; font-size: 18px; font-weight: bold; }
-        .option-btn { background: #dcdcdc; border: 2px outset #ffffff; width: 100%; padding: 10px; margin: 5px 0; text-align: left; cursor: pointer; font-family: 'Courier New'; }
-        .footer-info { font-size: 11px; color: #404040; border-top: 1px solid #808080; padding-top: 10px; margin-top: 20px; }
+        :root { --win-blue: #008080; --win-gray: #c0c0c0; --neon-pink: #ff00ff; --neon-cyan: #00ffff; }
+        body { margin: 0; background: var(--win-blue); font-family: 'Tahoma', sans-serif; overflow: hidden; }
+        #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--win-blue); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .win-dialog { background: var(--win-gray); border: 2px outset white; width: 340px; padding: 15px; box-shadow: 10px 10px 0 black; text-align: center; }
+        .win-header { background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan)); color: black; padding: 6px; font-weight: bold; text-align: left; font-size: 15px; margin-bottom: 15px; letter-spacing: 1px; border: 1px solid black; }
+        #desktop { display: none; width: 100vw; height: 100vh; }
+        .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 650px; background: var(--win-gray); border: 2px outset white; }
+        .win-title { background: navy; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: left; }
+        .win-body { padding: 10px; background: white; border: 2px inset var(--win-gray); margin: 4px; font-family: 'VT323'; min-height: 380px; }
+        .btn-win { background: var(--win-gray); border: 2px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; margin-top: 8px; font-weight: bold; }
+        .dist-track { height: 15px; background: #222; border: 1px solid #0f0; position: relative; margin: 20px 0; border-radius: 10px; }
+        #icon-player { position: absolute; left: 0; top: -12px; transition: 1s ease; font-size: 24px; z-index: 10; }
+        #icon-dr { position: absolute; left: 50%; top: -12px; transition: 1s ease; font-size: 24px; z-index: 10; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 2px inset white; font-family: 'VT323'; font-size: 22px; text-align: center; }
+        #status-msg { color: #d00; font-weight: bold; min-height: 20px; font-size: 14px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h2>>> NEBULA: SİBER_TAKİP_MODU</h2>
-        <input type="text" id="room-code" placeholder="ODA KODU (Örn: ENKA)">
-        <button onclick="joinRoom()">SİSTEME_SIZ_>></button>
-        <p id="status-message"></p>
-        <div class="footer-info">[SİNYAL: AKTİF | ŞİFRELEME: GÜVENLİ]</div>
+        <div class="win-dialog">
+            <div class="win-header">>> NEBULA: SİBER_TAKİP_MODU</div>
+            <div id="status-msg"></div>
+            <input type="text" id="room-id" placeholder="ODANI BELİRLE (ÖRN: ENKA)">
+            <button class="btn-win" onclick="joinRoom()">SİSTEME_SIZ_>></button>
+            <div style="font-size:10px; margin-top:10px; color:#444; font-family:monospace;">[SİNYAL: AKTİF | ŞİFRELEME: GÜVENLİ]</div>
+        </div>
     </div>
 
-    <div id="game-screen">
-        <h2 id="room-title">>> OPERASYON: BASINÇ</h2>
-        <div class="question-box" id="question-area">Yükleniyor...</div>
-        <div id="options-area"></div>
-        <div class="footer-info">AJAN: <span id="agent-id">...</span> | PUAN: <span id="score">0</span></div>
+    <div id="desktop">
+        <div class="window">
+            <div class="win-title" id="role-label">NEBULA TERMINAL v16.2</div>
+            <div class="win-body">
+                <div style="background:black; color:#0f0; padding:10px; border:2px inset white; border-radius: 5px;">
+                    <div id="turn-info">VERİ AKIŞI ANALİZ EDİLİYOR...</div>
+                    <div class="dist-track">
+                        <div id="icon-player">🕵️</div>
+                        <div id="icon-dr">😈</div>
+                    </div>
+                </div>
+                <div id="game-area" style="color:black; margin-top:15px; text-align:center;">
+                    <h2 id="q-text" style="font-size:26px;">Yükleniyor...</h2>
+                    <div id="options-area"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // SORU BANKASI (Hocam burayı istediğin gibi genişletebilirsin)
-        const soruBankasi = [
-            { soru: "Alçak basınç alanlarında hava hareketi nasıldır?", cevaplar: ["Merkezden çevreye", "Çevreden merkeze", "Yukarıdan aşağıya", "Yatay yönde"], dogru: 1 },
-            { soru: "Hangisi rüzgarın hızını ölçen alettir?", cevaplar: ["Barometre", "Higrometre", "Anemometre", "Termometre"], dogru: 2 },
-            { soru: "Ekvatorda yıl boyu görülen basınç türü hangisidir?", cevaplar: ["Termik Alçak Basınç", "Dinamik Yüksek Basınç", "Termik Yüksek Basınç", "Dinamik Alçak Basınç"], dogru: 0 }
-        ];
+<script>
+    // Firebase Konfigürasyonu (API Key Kısıtlamasıyla Uyumlu)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
+        authDomain: "drparalel-1f0cd.firebaseapp.com",
+        databaseURL: "https://drparalel-1f0cd-default-rtdb.firebaseio.com",
+        projectId: "drparalel-1f0cd",
+        storageBucket: "drparalel-1f0cd.firebasestorage.app",
+        messagingSenderId: "464154880090",
+        appId: "1:464154880090:web:bd2f540f76529d3ccc1063"
+    };
 
-        let mevcutSoruIndeksi = 0;
-        let puan = 0;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let myRole = '', roomId = '', state = { d: 50, idx: 0 };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
-            authDomain: "drparalel-1f0cd.firebaseapp.com",
-            databaseURL: "https://drparalel-1f0cd-default-rtdb.firebaseio.com",
-            projectId: "drparalel-1f0cd",
-            storageBucket: "drparalel-1f0cd.appspot.com",
-            messagingSenderId: "956382101031",
-            appId: "1:956382101031:web:4624647343718447839366"
-        };
+    const tasks = [
+        { q: "45° enlemindeki normal basınç değeri?", opts: ["1013 MB", "1033 MB"], ans: 0 },
+        { q: "Isınan havada oluşan basınç tipi?", opts: ["ALÇAK BASINÇ", "YÜKSEK BASINÇ"], ans: 0 },
+        { q: "Hava merkezden dışa doğru esiyorsa?", opts: ["ANTİSİKLON", "SİKLON"], ans: 0 },
+        { q: "Ekvator'daki sürekli alçak basınç kuşağı?", opts: ["TERMİK", "DİNAMİK"], ans: 0 },
+        { q: "Rüzgar hızını belirleyen basınç farkı?", opts: ["GRADYAN", "KOROZYON"], ans: 0 },
+        { q: "Haritadaki eş basınç eğrilerinin adı?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
+        { q: "Dağdan aşağı ısınarak inen kuru rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
+    ];
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    function joinRoom() {
+        roomId = document.getElementById('room-id').value.trim().toUpperCase();
+        if(!roomId) return;
+        const roomRef = db.ref('rooms/' + roomId);
+        
+        roomRef.once('value', (snap) => {
+            const data = snap.val();
+            let mySlotRef;
 
-        function joinRoom() {
-            const roomID = document.getElementById('room-code').value.toUpperCase();
-            if (!roomID) return;
-
-            const roomRef = database.ref('rooms/' + roomID);
-            document.getElementById('status-message').innerText = "Sisteme sızılıyor...";
-
-            roomRef.once('value', (snapshot) => {
-                const data = snapshot.val();
-                let slot = (!data || !data.p1) ? "p1" : (!data.p2 ? "p2" : null);
-
-                if (!slot) {
-                    document.getElementById('status-message').innerText = "ODA DOLU!";
-                    return;
-                }
-
-                const myRef = database.ref('rooms/' + roomID + '/' + slot);
-                myRef.set(true);
-                myRef.onDisconnect().remove();
-
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('game-screen').style.display = 'block';
-                    document.getElementById('agent-id').innerText = slot.toUpperCase();
-                    document.getElementById('room-title').innerText = ">> ODA: " + roomID;
-                    soruGoster();
-                }, 1500);
-            });
-        }
-
-        function soruGoster() {
-            if (mevcutSoruIndeksi >= soruBankasi.length) {
-                document.getElementById('question-area').innerText = "GÖREV TAMAMLANDI! Tebrikler Ajan.";
-                document.getElementById('options-area').innerHTML = "";
+            if (!data || !data.p1) {
+                myRole = 'hirsiz';
+                roomRef.update({ d: 50, idx: 0, p1: true });
+                mySlotRef = db.ref('rooms/' + roomId + '/p1');
+                startSync();
+            } else if (data.p1 && !data.p2) {
+                myRole = 'ajan';
+                roomRef.update({ p2: true });
+                mySlotRef = db.ref('rooms/' + roomId + '/p2');
+                startSync();
+            } else {
+                document.getElementById('status-msg').innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
                 return;
             }
 
-            const data = soruBankasi[mevcutSoruIndeksi];
-            document.getElementById('question-area').innerText = data.soru;
+            // OTOMATİK TEMİZLEME: Oyuncu çıkınca p1/p2 bilgisini ve odadaki d/idx'i temizle
+            mySlotRef.set(true);
+            mySlotRef.onDisconnect().remove();
             
-            let html = "";
-            data.cevaplar.forEach((c, index) => {
-                html += `<button class="option-btn" onclick="cevapKontrol(${index})">${c}</button>`;
-            });
-            document.getElementById('options-area').innerHTML = html;
+            // Eğer odadaki son kişi çıkarsa tüm odayı temizlemesi için:
+            // (Bu biraz daha kompleks bir mantık ama p1/p2'nin silinmesi odayı 'açacaktır')
+        });
+    }
+
+    function startSync() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'block';
+        document.getElementById('role-label').innerText = "OPERASYON MODU: " + myRole.toUpperCase();
+        
+        db.ref('rooms/' + roomId).on('value', (snap) => {
+            const data = snap.val();
+            if(data) { 
+                state.d = data.d; 
+                state.idx = data.idx; 
+                render(data.p1 && data.p2); 
+            } else {
+                // Oda silindiyse başa dön
+                location.reload();
+            }
+        });
+    }
+
+    function render(gameActive) {
+        document.getElementById('icon-dr').style.left = state.d + "%";
+        const area = document.getElementById('options-area');
+        area.innerHTML = '';
+        
+        if (!gameActive) {
+            document.getElementById('turn-info').innerText = ">> RAKİP SİNYALİ BEKLENİYOR...";
+            document.getElementById('q-text').innerText = "KOD: " + roomId;
+            return;
         }
 
-        function cevapKontrol(secilen) {
-            if (secilen === soruBankasi[mevcutSoruIndeksi].dogru) {
-                puan += 10;
-                document.getElementById('score').innerText = puan;
-                alert("DOĞRU! Veri sızdırıldı.");
-            } else {
-                alert("YANLIŞ! Güvenlik duvarına takıldın.");
-            }
-            mevcutSoruIndeksi++;
-            soruGoster();
+        const task = tasks[state.idx % tasks.length];
+        const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
+        
+        if (isMyTurn) {
+            document.getElementById('turn-info').innerText = ">> SIRADAKİ HAMLE SENDE!";
+            document.getElementById('q-text').innerText = task.q;
+            task.opts.forEach((opt, i) => {
+                const b = document.createElement('button');
+                b.className = 'btn-win';
+                b.innerText = opt;
+                b.onclick = () => {
+                    let newD = state.d;
+                    if(myRole === 'hirsiz') newD += (i === task.ans ? 10 : -5);
+                    else newD -= (i === task.ans ? 12 : -7);
+                    
+                    // Sınırları kontrol et
+                    if(newD > 95) newD = 95;
+                    if(newD < 5) newD = 5;
+
+                    db.ref('rooms/' + roomId).update({ d: newD, idx: state.idx + 1 });
+                };
+                area.appendChild(b);
+            });
+        } else {
+            document.getElementById('turn-info').innerText = ">> RAKİP ANALİZ EDİYOR...";
+            document.getElementById('q-text').innerText = "Veri senkronizasyonu aktif...";
         }
-    </script>
+
+        // Oyunun bitiş kontrolü
+        if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
+        else if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); reset(); }
+    }
+
+    function reset() { 
+        db.ref('rooms/' + roomId).remove(); 
+        setTimeout(() => { location.reload(); }, 500); 
+    }
+</script>
 </body>
 </html>
