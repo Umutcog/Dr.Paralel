@@ -42,14 +42,14 @@
             <div class="win-title" id="role-label">NEBULA TERMINAL v16.2</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:10px; border:2px inset white; border-radius: 5px;">
-                    <div id="turn-info">VERİ AKIŞI ANALİZ EDİLİYOR...</div>
+                    <div id="turn-info">BAĞLANTI KURULUYOR...</div>
                     <div class="dist-track">
                         <div id="icon-player">🕵️</div>
                         <div id="icon-dr">😈</div>
                     </div>
                 </div>
                 <div id="game-area" style="color:black; margin-top:15px; text-align:center;">
-                    <h2 id="q-text" style="font-size:26px;">Yükleniyor...</h2>
+                    <h2 id="q-text" style="font-size:26px;">Veri paketleri bekleniyor...</h2>
                     <div id="options-area"></div>
                 </div>
             </div>
@@ -57,7 +57,7 @@
     </div>
 
 <script>
-    // Firebase Konfigürasyonu (API Key Kısıtlamasıyla Uyumlu)
+    // Sizin orijinal kodunuzdaki Firebase verileri (En sağlıklı olanlar)
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -95,23 +95,19 @@
                 myRole = 'hirsiz';
                 roomRef.update({ d: 50, idx: 0, p1: true });
                 mySlotRef = db.ref('rooms/' + roomId + '/p1');
+                mySlotRef.set(true);
+                mySlotRef.onDisconnect().remove();
                 startSync();
             } else if (data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
                 mySlotRef = db.ref('rooms/' + roomId + '/p2');
+                mySlotRef.set(true);
+                mySlotRef.onDisconnect().remove();
                 startSync();
             } else {
                 document.getElementById('status-msg').innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
-                return;
             }
-
-            // OTOMATİK TEMİZLEME: Oyuncu çıkınca p1/p2 bilgisini ve odadaki d/idx'i temizle
-            mySlotRef.set(true);
-            mySlotRef.onDisconnect().remove();
-            
-            // Eğer odadaki son kişi çıkarsa tüm odayı temizlemesi için:
-            // (Bu biraz daha kompleks bir mantık ama p1/p2'nin silinmesi odayı 'açacaktır')
         });
     }
 
@@ -122,13 +118,10 @@
         
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
-            if(data) { 
+            if(data && data.p1 !== undefined) { 
                 state.d = data.d; 
                 state.idx = data.idx; 
                 render(data.p1 && data.p2); 
-            } else {
-                // Oda silindiyse başa dön
-                location.reload();
             }
         });
     }
@@ -159,7 +152,6 @@
                     if(myRole === 'hirsiz') newD += (i === task.ans ? 10 : -5);
                     else newD -= (i === task.ans ? 12 : -7);
                     
-                    // Sınırları kontrol et
                     if(newD > 95) newD = 95;
                     if(newD < 5) newD = 5;
 
@@ -172,7 +164,6 @@
             document.getElementById('q-text').innerText = "Veri senkronizasyonu aktif...";
         }
 
-        // Oyunun bitiş kontrolü
         if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); reset(); }
         else if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); reset(); }
     }
