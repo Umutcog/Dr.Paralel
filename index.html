@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v17.0</title>
+    <title>NEBULA: CYBER_OS v17.1</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -11,35 +11,30 @@
         :root { --neon-green: #39FF14; --cyber-bg: #050505; --win-gray: #c0c0c0; }
         body { margin: 0; background: var(--cyber-bg); font-family: 'VT323', monospace; color: var(--neon-green); overflow: hidden; }
         
-        /* Efektler */
         @keyframes shake { 0%, 100% {transform: translate(0,0);} 25% {transform: translate(-5px,2px);} 75% {transform: translate(5px,-2px);} }
         .shake { animation: shake 0.2s ease-in-out 2; }
         .flash-green { background: #003300 !important; }
         .flash-red { background: #330000 !important; }
 
-        /* Masaüstü Simgeleri */
         .desktop-icons { position: absolute; top: 15px; left: 15px; display: grid; grid-template-columns: repeat(2, 90px); gap: 20px; z-index: 1; }
         .icon { text-align: center; opacity: 0.5; font-size: 13px; color: white; }
         .icon-img { font-size: 30px; margin-bottom: 2px; }
 
-        /* Pencereler */
-        #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); }
-        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 360px; padding: 2px; box-shadow: 12px 12px 0 black; color: black; }
+        #login-screen, #briefing-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); }
+        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 380px; padding: 2px; box-shadow: 12px 12px 0 black; color: black; }
         .win-header { background: linear-gradient(90deg, #000080, #0080ff); color: white; padding: 6px; font-weight: bold; display: flex; justify-content: space-between; }
         .win-content { padding: 15px; background: #c0c0c0; border: 2px inset white; }
         
         input { width: 90%; padding: 10px; margin: 15px 0; border: 3px inset white; font-family: 'VT323'; font-size: 26px; text-align: center; background: black; color: var(--neon-green); }
         .btn-win { background: var(--win-gray); border: 3px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 22px; width: 100%; font-weight: bold; }
 
-        /* Oyun Terminali */
         #desktop { display: none; width: 100vw; height: 100vh; }
         .main-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 750px; background: var(--win-gray); border: 3px outset white; color: black; }
         .terminal-box { background: black; color: var(--neon-green); padding: 12px; border: 3px inset gray; min-height: 190px; }
         
-        /* Takip Sistemi */
-        .dist-track { height: 40px; background: #111; border: 2px solid var(--neon-green); position: relative; margin: 40px 0; border-radius: 6px; }
-        .char-icon { position: absolute; transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 34px; text-align: center; width: 60px; z-index: 5; }
-        .char-label { font-size: 11px; display: block; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; margin-top: -4px; }
+        .dist-track { height: 45px; background: #111; border: 2px solid var(--neon-green); position: relative; margin: 45px 0; border-radius: 6px; }
+        .char-icon { position: absolute; transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 34px; text-align: center; width: 80px; z-index: 5; }
+        .char-label { font-size: 11px; display: block; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; margin-top: -4px; line-height: 1.2; }
         .is-me { filter: drop-shadow(0 0 10px var(--neon-green)); }
         .is-me .char-label { color: gold; border: 1px solid gold; font-weight: bold; }
     </style>
@@ -50,16 +45,16 @@
         <div class="icon"><div class="icon-img">🖥️</div>Sistem</div>
         <div class="icon"><div class="icon-img">🗑️</div>Geri_Dönüşüm</div>
         <div class="icon"><div class="icon-img">📁</div>Veri_Arşivi</div>
-        <div class="icon"><div class="icon-img">📡</div>Sinyal_Tarayıcı</div>
+        <div class="icon"><div class="icon-img">📡</div>Sinyal_Taraması</div>
         <div class="icon"><div class="icon-img">🛡️</div>Güvenlik</div>
         <div class="icon"><div class="icon-img">☣️</div>Malware</div>
-        <div class="icon"><div class="icon-img">🔌</div>Proxy_List</div>
-        <div class="icon" style="color:red"><div class="icon-img">🚨</div>HEDEF_TRACK</div>
+        <div class="icon"><div class="icon-img">🔌</div>Proxy_Hub</div>
+        <div class="icon" style="color:red"><div class="icon-img">🚨</div>DR_PARALEL_ALARM</div>
     </div>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>NEBULA_LOGIN_v17.0</span></div>
+            <div class="win-header"><span>NEBULA_LOGIN_v17.1</span></div>
             <div class="win-content">
                 <div id="status-msg">>> OPERASYON KODU BEKLENİYOR...</div>
                 <input type="text" id="room-id" placeholder="ODA KODUNU GİR">
@@ -68,16 +63,29 @@
         </div>
     </div>
 
+    <div id="briefing-screen" style="display:none;">
+        <div class="win-dialog">
+            <div class="win-header"><span>GÖREV_BRİFİNGİ.TXT</span></div>
+            <div class="win-content" style="font-size:18px; color: #111;">
+                <p><strong>AMACINIZ:</strong> Siber kovalamacayı kazanın!</p>
+                <p><strong>SİBER AJAN:</strong> Soruları bilerek Dr. Paralel'e yaklaşın ve onu yakalayın.</p>
+                <p><strong>DR. PARALEL:</strong> Soruları bilerek arayı açın ve sistemden kaçın.</p>
+                <p style="font-size: 14px; border-top: 1px solid #999; padding-top: 5px;">* Doğru cevap sizi ileri taşır, yanlış cevap geriletir.</p>
+                <button class="btn-win" onclick="closeBriefing()">ANLAŞILDI, BAŞLA!</button>
+            </div>
+        </div>
+    </div>
+
     <div id="desktop">
         <div class="main-window">
             <div class="win-header"><span>OPERASYON_TERMİNALİ</span><span>_ [] X</span></div>
             <div style="padding: 12px;">
-                <div id="role-indicator" style="font-size: 22px; font-weight: bold; background: #000; color: #39FF14; padding: 10px; text-align: center; border: 2px dashed #39FF14; margin-bottom: 15px;">BAĞLANTI_KURULUYOR...</div>
+                <div id="role-indicator" style="font-size: 20px; font-weight: bold; background: #000; color: #39FF14; padding: 10px; text-align: center; border: 2px dashed #39FF14; margin-bottom: 15px;">BAĞLANTI_KURULUYOR...</div>
                 <div class="terminal-box" id="terminal">
                     <div id="turn-info">SİNYAL_ARANIYOR...</div>
                     <div class="dist-track">
-                        <div id="char-ajan" class="char-icon">🕵️<span class="char-label">AJAN</span></div>
-                        <div id="char-hirsiz" class="char-icon">😈<span class="char-label">HEDEF</span></div>
+                        <div id="char-ajan" class="char-icon">🕵️<span class="char-label" id="label-ajan">AJAN</span></div>
+                        <div id="char-hirsiz" class="char-icon">😈<span class="char-label" id="label-hirsiz">DR. PARALEL</span></div>
                     </div>
                     <div id="log-area" style="font-size:14px; color:#555; margin-top:20px; border-top: 1px solid #333; padding-top: 5px;">>> Sistem logları hazır.</div>
                 </div>
@@ -124,23 +132,43 @@
                 myRole = 'hirsiz';
                 roomRef.update({ ajanP: 0, hirsizP: 50, idx: 0, p1: true });
                 db.ref('rooms/' + roomId + '/p1').onDisconnect().remove();
-                startSync();
+                showBriefing();
             } else if (data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
                 db.ref('rooms/' + roomId + '/p2').onDisconnect().remove();
-                startSync();
+                showBriefing();
             } else {
                 document.getElementById('status-msg').innerText = "!! SİSTEM DOLU !!";
             }
         });
     }
 
-    function startSync() {
+    function showBriefing() {
         document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('briefing-screen').style.display = 'flex';
+    }
+
+    function closeBriefing() {
+        document.getElementById('briefing-screen').style.display = 'none';
         document.getElementById('desktop').style.display = 'block';
-        document.getElementById('role-indicator').innerText = "ROLÜNÜZ: " + (myRole === 'hirsiz' ? "HEDEF (DR. PARALEL)" : "SİBER AJAN");
-        document.getElementById(myRole === 'hirsiz' ? 'char-hirsiz' : 'char-ajan').classList.add('is-me');
+        startSync();
+    }
+
+    function startSync() {
+        const roleText = myRole === 'hirsiz' ? "DR. PARALEL" : "SİBER AJAN";
+        document.getElementById('role-indicator').innerText = "ROLÜNÜZ: " + roleText;
+        
+        // Karakter etiketlerini güncelle (Sen/Rakip)
+        if(myRole === 'hirsiz') {
+            document.getElementById('label-hirsiz').innerHTML = "DR. PARALEL<br>(Sen)";
+            document.getElementById('label-ajan').innerHTML = "AJAN<br>(Rakip)";
+            document.getElementById('char-hirsiz').classList.add('is-me');
+        } else {
+            document.getElementById('label-ajan').innerHTML = "AJAN<br>(Sen)";
+            document.getElementById('label-hirsiz').innerHTML = "DR. PARALEL<br>(Rakip)";
+            document.getElementById('char-ajan').classList.add('is-me');
+        }
 
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
@@ -193,7 +221,7 @@
                         res = "BAŞARILI SIZMA!";
                         if(myRole === 'hirsiz') newHirsiz += 12; else newAjan += 15;
                     } else {
-                        res = "HATA! DOĞRU CEVAP: " + task.opts[task.ans];
+                        res = "HATA! DOĞRU: " + task.opts[task.ans];
                         if(myRole === 'hirsiz') newHirsiz -= 5; else newAjan -= 8;
                     }
                     newAjan = Math.max(0, Math.min(newAjan, 90));
@@ -207,8 +235,8 @@
             document.getElementById('q-text').innerText = "VERİ PAKETİ BEKLENİYOR...";
         }
 
-        if(state.hirsizP >= 92) { alert("DR. PARALEL KAÇTI!"); reset(); }
-        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN YAKALADI!"); reset(); }
+        if(state.hirsizP >= 92) { alert("OPERASYON BAŞARISIZ: DR. PARALEL KAÇTI!"); reset(); }
+        else if(state.ajanP >= (state.hirsizP - 2)) { alert("OPERASYON BAŞARILI: AJAN YAKALADI!"); reset(); }
     }
 
     function reset() { db.ref('rooms/' + roomId).remove(); setTimeout(() => location.reload(), 500); }
