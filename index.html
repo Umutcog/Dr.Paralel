@@ -3,87 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v16.8</title>
+    <title>NEBULA: CYBER_OS v16.9</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #39FF14; --cyber-bg: #050505; --win-gray: #c0c0c0; }
-        body { margin: 0; background: var(--cyber-bg); font-family: 'VT323', monospace; color: var(--neon-green); overflow: hidden; transition: 0.3s; }
+        body { margin: 0; background: var(--cyber-bg); font-family: 'VT323', monospace; color: var(--neon-green); overflow: hidden; }
         
-        /* Titreşim ve Efektler */
+        /* Efektler */
         @keyframes shake { 0%, 100% {transform: translate(0,0);} 25% {transform: translate(-5px,2px);} 75% {transform: translate(5px,-2px);} }
         .shake { animation: shake 0.2s ease-in-out 2; }
         .flash-green { background: #003300 !important; }
         .flash-red { background: #330000 !important; }
 
-        /* Masaüstü Simgeleri (Artırıldı) */
-        .desktop-icons { position: absolute; top: 10px; left: 10px; display: grid; grid-template-columns: repeat(2, 80px); gap: 20px; z-index: 1; }
-        .icon { text-align: center; opacity: 0.6; font-size: 12px; color: white; }
-        .icon-img { font-size: 28px; margin-bottom: 2px; }
+        /* Masaüstü Simgeleri */
+        .desktop-icons { position: absolute; top: 10px; left: 10px; display: grid; grid-template-columns: repeat(2, 90px); gap: 20px; z-index: 1; }
+        .icon { text-align: center; opacity: 0.6; font-size: 13px; color: white; cursor: pointer; }
+        .icon:hover { opacity: 1; color: var(--neon-green); }
+        .icon-img { font-size: 30px; margin-bottom: 2px; }
 
+        /* Pencereler */
         #login-screen, #briefing-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); }
-        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 360px; padding: 2px; box-shadow: 10px 10px 0 black; color: black; }
-        .win-header { background: linear-gradient(90deg, #000080, #0080ff); color: white; padding: 5px; font-weight: bold; display: flex; justify-content: space-between; }
+        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 380px; padding: 2px; box-shadow: 12px 12px 0 black; color: black; }
+        .win-header { background: linear-gradient(90deg, #000080, #0080ff); color: white; padding: 6px; font-weight: bold; display: flex; justify-content: space-between; }
         .win-content { padding: 15px; background: #c0c0c0; border: 2px inset white; }
         
         input { width: 90%; padding: 10px; margin: 10px 0; border: 3px inset white; font-family: 'VT323'; font-size: 24px; text-align: center; background: black; color: var(--neon-green); }
-        .btn-win { background: var(--win-gray); border: 3px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; font-weight: bold; margin-bottom: 5px; }
-        
-        /* Oyun Ekranı */
+        .btn-win { background: var(--win-gray); border: 3px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; font-weight: bold; margin-bottom: 8px; }
+        .btn-win:active { border: 3px inset white; }
+
+        /* Oyun Terminali */
         #desktop { display: none; width: 100vw; height: 100vh; }
         .main-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 750px; background: var(--win-gray); border: 3px outset white; color: black; }
-        .terminal-box { background: black; color: var(--neon-green); padding: 10px; border: 3px inset gray; min-height: 180px; }
+        .terminal-box { background: black; color: var(--neon-green); padding: 12px; border: 3px inset gray; min-height: 190px; }
         
-        /* Yeni Çiftli Takip Çubuğu */
-        .dist-track { height: 35px; background: #111; border: 2px solid var(--neon-green); position: relative; margin: 35px 0; border-radius: 5px; box-shadow: inset 0 0 10px #000; }
-        .char-icon { position: absolute; transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 32px; text-align: center; width: 50px; z-index: 5; }
-        .char-label { font-size: 11px; display: block; background: rgba(0,0,0,0.8); color: white; padding: 1px 3px; border-radius: 3px; margin-top: -5px; }
-        .is-me { filter: drop-shadow(0 0 8px var(--neon-green)); font-weight: bold; }
-        .is-me .char-label { color: gold; border: 1px solid gold; }
-
-        #role-indicator { font-size: 22px; font-weight: bold; background: #111; color: #39FF14; padding: 8px; text-align: center; border: 1px dashed #39FF14; margin-bottom: 10px; }
+        /* Takip Sistemi */
+        .dist-track { height: 40px; background: #111; border: 2px solid var(--neon-green); position: relative; margin: 40px 0; border-radius: 6px; }
+        .char-icon { position: absolute; transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 34px; text-align: center; width: 60px; z-index: 5; }
+        .char-label { font-size: 11px; display: block; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; margin-top: -4px; }
+        .is-me { filter: drop-shadow(0 0 10px var(--neon-green)); }
+        .is-me .char-label { color: gold; border: 1px solid gold; font-weight: bold; }
     </style>
 </head>
 <body id="body-main">
 
     <div class="desktop-icons">
         <div class="icon"><div class="icon-img">🖥️</div>Sistem</div>
-        <div class="icon"><div class="icon-img">🗑️</div>Çöp</div>
-        <div class="icon"><div class="icon-img">📁</div>Arşiv</div>
-        <div class="icon"><div class="icon-img">📡</div>Radar</div>
-        <div class="icon"><div class="icon-img">🔌</div>Proxy</div>
-        <div class="icon"><div class="icon-img">🛡️</div>Firewall</div>
-        <div class="icon"><div class="icon-img">☣️</div>Virüs</div>
-        <div class="icon" style="color:red"><div class="icon-img">🚨</div>HEDEF</div>
+        <div class="icon"><div class="icon-img">🗑️</div>Çöp Kutusu</div>
+        <div class="icon"><div class="icon-img">📁</div>Veri_Arşivi</div>
+        <div class="icon"><div class="icon-img">📡</div>Sinyal_Tarayıcı</div>
+        <div class="icon"><div class="icon-img">🛡️</div>Güvenlik</div>
+        <div class="icon"><div class="icon-img">☣️</div>Zararlı_Yazılım</div>
+        <div class="icon"><div class="icon-img">🔌</div>Proxy_List</div>
+        <div class="icon" style="color:red"><div class="icon-img">🚨</div>HEDEF_TRACK</div>
+    </div>
+
+    <div id="briefing-screen" style="display:none;">
+        <div class="win-dialog">
+            <div class="win-header"><span>GÖREV_BRİFİNGİ.TXT</span><span onclick="closeBriefing()" style="cursor:pointer"> [X] </span></div>
+            <div class="win-content" style="font-size:18px; color: #333;">
+                <p><strong>1. ROLÜNÜ SEÇ:</strong> Odaya ilk giren Hedef (Dr. Paralel), ikinci giren Siber Ajan olur.</p>
+                <p><strong>2. HAREKET MANTIĞI:</strong> Doğru cevap verirsen karakterin sağa hamle yapar. Yanlış cevapta gerilersin.</p>
+                <p><strong>3. KAZANMA ŞARTI:</strong> Ajan, Hedef'in üzerine gelirse yakalar. Hedef, pistin sonuna ulaşırsa kaçar.</p>
+                <button class="btn-win" onclick="closeBriefing()">ANLAŞILDI_>></button>
+            </div>
+        </div>
     </div>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>LOGIN_SESSION_v16.8</span></div>
+            <div class="win-header"><span>NEBULA_SESSION_v16.9</span></div>
             <div class="win-content">
-                <div id="status-msg">>> OPERASYON KODUNU GİRİN...</div>
-                <input type="text" id="room-id" placeholder="ODA KODU">
+                <div id="status-msg">>> OPERASYON KODU BEKLENİYOR...</div>
+                <input type="text" id="room-id" placeholder="ODA KODUNU GİR">
                 <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
+                <button class="btn-win" style="font-size:16px; background:#e1e1e1;" onclick="openBriefing()">NASIL OYNANIR?</button>
             </div>
         </div>
     </div>
 
     <div id="desktop">
         <div class="main-window">
-            <div class="win-header"><span>OPERASYON_TERMİNALİ</span></div>
-            <div style="padding: 10px;">
-                <div id="role-indicator">BAĞLANTI KURULUYOR...</div>
+            <div class="win-header"><span>OPERASYON_TERMİNALİ</span><span>_ [] X</span></div>
+            <div style="padding: 12px;">
+                <div id="role-indicator" style="font-size: 22px; font-weight: bold; background: #000; color: #39FF14; padding: 10px; text-align: center; border: 2px dashed #39FF14; margin-bottom: 15px;">BAĞLANTI_KURULUYOR...</div>
                 <div class="terminal-box" id="terminal">
                     <div id="turn-info">SİNYAL_ARANIYOR...</div>
                     <div class="dist-track">
                         <div id="char-ajan" class="char-icon">🕵️<span class="char-label">AJAN</span></div>
                         <div id="char-hirsiz" class="char-icon">😈<span class="char-label">HEDEF</span></div>
                     </div>
-                    <div id="log-area" style="font-size:14px; color:#666; margin-top:15px; border-top: 1px solid #333;">>> Beklemede...</div>
+                    <div id="log-area" style="font-size:14px; color:#555; margin-top:20px; border-top: 1px solid #333; padding-top: 5px;">>> Sistem logları hazır.</div>
                 </div>
-                <div id="game-area" style="margin-top: 15px; text-align: center;">
-                    <h2 id="q-text" style="font-size: 24px; color: #111; min-height: 60px;">VERİ PAKETİ BEKLENİYOR...</h2>
+                <div id="game-area" style="margin-top: 20px; text-align: center;">
+                    <h2 id="q-text" style="font-size: 26px; color: #111; min-height: 70px;">...</h2>
                     <div id="options-area"></div>
                 </div>
             </div>
@@ -91,6 +105,7 @@
     </div>
 
 <script>
+    // Firebase Config (Öncekiyle aynı)
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -114,6 +129,9 @@
         { q: "Haritadaki eş basınç eğrilerinin adı?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
         { q: "Dağdan aşağı ısınarak inen kuru rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
     ];
+
+    function openBriefing() { document.getElementById('briefing-screen').style.display = 'flex'; }
+    function closeBriefing() { document.getElementById('briefing-screen').style.display = 'none'; }
 
     function joinRoom() {
         roomId = document.getElementById('room-id').value.trim().toUpperCase();
@@ -170,7 +188,6 @@
     function render(gameActive) {
         document.getElementById('char-ajan').style.left = state.ajanP + "%";
         document.getElementById('char-hirsiz').style.left = state.hirsizP + "%";
-        
         const area = document.getElementById('options-area');
         area.innerHTML = '';
         if (!gameActive) {
@@ -182,33 +199,24 @@
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = ">> SENİN SIRAN! VERİ SIZDIR.";
+            document.getElementById('turn-info').innerText = ">> SENİN SIRAN! VERİ GİRİŞİ YAP.";
             document.getElementById('q-text').innerText = task.q;
-            
             let opts = task.opts.map((t, i) => ({ t, i })).sort(() => Math.random() - 0.5);
             opts.forEach((opt) => {
                 const b = document.createElement('button');
                 b.className = 'btn-win';
                 b.innerText = opt.t;
                 b.onclick = () => {
-                    let newAjan = state.ajanP;
-                    let newHirsiz = state.hirsizP;
-                    let res = "";
-                    
+                    let newAjan = state.ajanP, newHirsiz = state.hirsizP, res = "";
                     if(opt.i === task.ans) {
-                        res = "BAŞARILI!";
-                        if(myRole === 'hirsiz') newHirsiz += 12;
-                        else newAjan += 15;
+                        res = "BAŞARILI SIZMA!";
+                        if(myRole === 'hirsiz') newHirsiz += 12; else newAjan += 15;
                     } else {
-                        res = "HATA! DOĞRU: " + task.opts[task.ans];
-                        if(myRole === 'hirsiz') newHirsiz -= 5;
-                        else newAjan -= 8;
+                        res = "HATA! DOĞRU CEVAP: " + task.opts[task.ans];
+                        if(myRole === 'hirsiz') newHirsiz -= 5; else newAjan -= 8;
                     }
-                    
-                    // Sınır koruma
                     newAjan = Math.max(0, Math.min(newAjan, 90));
                     newHirsiz = Math.max(0, Math.min(newHirsiz, 92));
-
                     db.ref('rooms/' + roomId).update({ ajanP: newAjan, hirsizP: newHirsiz, idx: state.idx + 1, lastResult: res });
                 };
                 area.appendChild(b);
@@ -218,9 +226,8 @@
             document.getElementById('q-text').innerText = "VERİ PAKETİ BEKLENİYOR...";
         }
 
-        // Kazanma Kontrolü
-        if(state.hirsizP >= 92) { alert("DR. PARALEL KAÇTI!"); reset(); }
-        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN YAKALADI!"); reset(); }
+        if(state.hirsizP >= 92) { alert("DR. PARALEL SİSTEMDEN KAÇTI!"); reset(); }
+        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN HEDEFİ YAKALADI!"); reset(); }
     }
 
     function reset() { db.ref('rooms/' + roomId).remove(); setTimeout(() => location.reload(), 500); }
