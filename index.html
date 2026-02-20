@@ -30,7 +30,7 @@
     <div id="login-screen">
         <div class="win-dialog">
             <div class="win-header">>> NEBULA: SİBER_TAKİP_MODU</div>
-            <div id="status-msg"></div>
+            <div id="status-msg">SİSTEM HAZIR. KOD GİRİN.</div>
             <input type="text" id="room-id" placeholder="ODANI BELİRLE (ÖRN: ENKA)">
             <button class="btn-win" onclick="joinRoom()">SİSTEME_SIZ_>></button>
             <div style="font-size:10px; margin-top:10px; color:#444; font-family:monospace;">[SİNYAL: AKTİF | ŞİFRELEME: GÜVENLİ]</div>
@@ -39,10 +39,10 @@
 
     <div id="desktop">
         <div class="window">
-            <div class="win-title" id="role-label">NEBULA TERMINAL v16.3</div>
+            <div class="win-title" id="role-label">NEBULA TERMINAL v16.4</div>
             <div class="win-body">
                 <div style="background:black; color:#0f0; padding:10px; border:2px inset white; border-radius: 5px;">
-                    <div id="turn-info">BAĞLANTI KURULUYOR...</div>
+                    <div id="turn-info">SİNYAL ANALİZ EDİLİYOR...</div>
                     <div class="dist-track">
                         <div id="icon-player">🕵️</div>
                         <div id="icon-dr">😈</div>
@@ -57,6 +57,7 @@
     </div>
 
 <script>
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -67,7 +68,12 @@
         appId: "1:464154880090:web:bd2f540f76529d3ccc1063"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    try {
+        firebase.initializeApp(firebaseConfig);
+    } catch (e) {
+        console.error("Firebase başlatılamadı:", e);
+    }
+    
     const db = firebase.database();
     let myRole = '', roomId = '', state = { d: 50, idx: 0 };
 
@@ -88,21 +94,19 @@
         
         roomRef.once('value', (snap) => {
             const data = snap.val();
-            let mySlotRef;
-
             if (!data || !data.p1) {
                 myRole = 'hirsiz';
                 roomRef.update({ d: 50, idx: 0, p1: true });
-                mySlotRef = db.ref('rooms/' + roomId + '/p1');
-                mySlotRef.set(true);
-                mySlotRef.onDisconnect().remove();
+                db.ref('rooms/' + roomId + '/p1').set(true).then(() => {
+                    db.ref('rooms/' + roomId + '/p1').onDisconnect().remove();
+                });
                 startSync();
             } else if (data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
-                mySlotRef = db.ref('rooms/' + roomId + '/p2');
-                mySlotRef.set(true);
-                mySlotRef.onDisconnect().remove();
+                db.ref('rooms/' + roomId + '/p2').set(true).then(() => {
+                    db.ref('rooms/' + roomId + '/p2').onDisconnect().remove();
+                });
                 startSync();
             } else {
                 document.getElementById('status-msg').innerText = "ERİŞİM ENGELLENDİ: ODA DOLU!";
@@ -140,7 +144,7 @@
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
         
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = ">> SIRADAKİ HAMLE SENDE!";
+            document.getElementById('turn-info').innerText = ">> SIRA SENDE!";
             document.getElementById('q-text').innerText = task.q;
             task.opts.forEach((opt, i) => {
                 const b = document.createElement('button');
@@ -153,7 +157,6 @@
                     
                     if(newD > 95) newD = 95;
                     if(newD < 5) newD = 5;
-
                     db.ref('rooms/' + roomId).update({ d: newD, idx: state.idx + 1 });
                 };
                 area.appendChild(b);
@@ -164,21 +167,18 @@
         }
 
         if(state.d >= 95) { alert("DR. PARALEL KAÇTI!"); recordWin('hirsiz'); }
-        else if(state.d <= 5) { alert("AJAN ENKA YAKALADI!"); recordWin('ajan'); }
+        else if(state.d <= 5) { alert("AJAN YAKALADI!"); recordWin('ajan'); }
     }
 
     function recordWin(winner) {
         if (myRole === 'hirsiz') {
             const statsRef = db.ref('global_stats');
-            statsRef.transaction((currentData) => {
-                if (currentData === null) {
-                    return { total_games: 1, hirsiz_wins: (winner === 'hirsiz' ? 1 : 0), ajan_wins: (winner === 'ajan' ? 1 : 0) };
-                } else {
-                    currentData.total_games = (currentData.total_games || 0) + 1;
-                    if (winner === 'hirsiz') currentData.hirsiz_wins = (currentData.hirsiz_wins || 0) + 1;
-                    if (winner === 'ajan') currentData.ajan_wins = (currentData.ajan_wins || 0) + 1;
-                    return currentData;
-                }
+            statsRef.transaction((current) => {
+                if (current === null) return { total: 1, hirsiz: (winner === 'hirsiz' ? 1 : 0), ajan: (winner === 'ajan' ? 1 : 0) };
+                current.total = (current.total || 0) + 1;
+                if (winner === 'hirsiz') current.hirsiz = (current.hirsiz || 0) + 1;
+                if (winner === 'ajan') current.ajan = (current.ajan || 0) + 1;
+                return current;
             });
         }
         reset();
