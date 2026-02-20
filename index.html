@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v16.9</title>
+    <title>NEBULA: CYBER_OS v17.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -18,20 +18,18 @@
         .flash-red { background: #330000 !important; }
 
         /* Masaüstü Simgeleri */
-        .desktop-icons { position: absolute; top: 10px; left: 10px; display: grid; grid-template-columns: repeat(2, 90px); gap: 20px; z-index: 1; }
-        .icon { text-align: center; opacity: 0.6; font-size: 13px; color: white; cursor: pointer; }
-        .icon:hover { opacity: 1; color: var(--neon-green); }
+        .desktop-icons { position: absolute; top: 15px; left: 15px; display: grid; grid-template-columns: repeat(2, 90px); gap: 20px; z-index: 1; }
+        .icon { text-align: center; opacity: 0.5; font-size: 13px; color: white; }
         .icon-img { font-size: 30px; margin-bottom: 2px; }
 
         /* Pencereler */
-        #login-screen, #briefing-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); }
-        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 380px; padding: 2px; box-shadow: 12px 12px 0 black; color: black; }
+        #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); }
+        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 360px; padding: 2px; box-shadow: 12px 12px 0 black; color: black; }
         .win-header { background: linear-gradient(90deg, #000080, #0080ff); color: white; padding: 6px; font-weight: bold; display: flex; justify-content: space-between; }
         .win-content { padding: 15px; background: #c0c0c0; border: 2px inset white; }
         
-        input { width: 90%; padding: 10px; margin: 10px 0; border: 3px inset white; font-family: 'VT323'; font-size: 24px; text-align: center; background: black; color: var(--neon-green); }
-        .btn-win { background: var(--win-gray); border: 3px outset white; padding: 10px; cursor: pointer; font-family: 'VT323'; font-size: 20px; width: 100%; font-weight: bold; margin-bottom: 8px; }
-        .btn-win:active { border: 3px inset white; }
+        input { width: 90%; padding: 10px; margin: 15px 0; border: 3px inset white; font-family: 'VT323'; font-size: 26px; text-align: center; background: black; color: var(--neon-green); }
+        .btn-win { background: var(--win-gray); border: 3px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 22px; width: 100%; font-weight: bold; }
 
         /* Oyun Terminali */
         #desktop { display: none; width: 100vw; height: 100vh; }
@@ -50,35 +48,22 @@
 
     <div class="desktop-icons">
         <div class="icon"><div class="icon-img">🖥️</div>Sistem</div>
-        <div class="icon"><div class="icon-img">🗑️</div>Çöp Kutusu</div>
+        <div class="icon"><div class="icon-img">🗑️</div>Geri_Dönüşüm</div>
         <div class="icon"><div class="icon-img">📁</div>Veri_Arşivi</div>
         <div class="icon"><div class="icon-img">📡</div>Sinyal_Tarayıcı</div>
         <div class="icon"><div class="icon-img">🛡️</div>Güvenlik</div>
-        <div class="icon"><div class="icon-img">☣️</div>Zararlı_Yazılım</div>
+        <div class="icon"><div class="icon-img">☣️</div>Malware</div>
         <div class="icon"><div class="icon-img">🔌</div>Proxy_List</div>
         <div class="icon" style="color:red"><div class="icon-img">🚨</div>HEDEF_TRACK</div>
     </div>
 
-    <div id="briefing-screen" style="display:none;">
-        <div class="win-dialog">
-            <div class="win-header"><span>GÖREV_BRİFİNGİ.TXT</span><span onclick="closeBriefing()" style="cursor:pointer"> [X] </span></div>
-            <div class="win-content" style="font-size:18px; color: #333;">
-                <p><strong>1. ROLÜNÜ SEÇ:</strong> Odaya ilk giren Hedef (Dr. Paralel), ikinci giren Siber Ajan olur.</p>
-                <p><strong>2. HAREKET MANTIĞI:</strong> Doğru cevap verirsen karakterin sağa hamle yapar. Yanlış cevapta gerilersin.</p>
-                <p><strong>3. KAZANMA ŞARTI:</strong> Ajan, Hedef'in üzerine gelirse yakalar. Hedef, pistin sonuna ulaşırsa kaçar.</p>
-                <button class="btn-win" onclick="closeBriefing()">ANLAŞILDI_>></button>
-            </div>
-        </div>
-    </div>
-
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>NEBULA_SESSION_v16.9</span></div>
+            <div class="win-header"><span>NEBULA_LOGIN_v17.0</span></div>
             <div class="win-content">
                 <div id="status-msg">>> OPERASYON KODU BEKLENİYOR...</div>
                 <input type="text" id="room-id" placeholder="ODA KODUNU GİR">
                 <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
-                <button class="btn-win" style="font-size:16px; background:#e1e1e1;" onclick="openBriefing()">NASIL OYNANIR?</button>
             </div>
         </div>
     </div>
@@ -105,7 +90,6 @@
     </div>
 
 <script>
-    // Firebase Config (Öncekiyle aynı)
     const firebaseConfig = {
         apiKey: "AIzaSyDYdIVHhh9HHjJAoaOKot8YbBQukgRKDC8",
         authDomain: "drparalel-1f0cd.firebaseapp.com",
@@ -129,9 +113,6 @@
         { q: "Haritadaki eş basınç eğrilerinin adı?", opts: ["İZOBAR", "İZOTERM"], ans: 0 },
         { q: "Dağdan aşağı ısınarak inen kuru rüzgar?", opts: ["FÖN", "MİSTRAL"], ans: 0 }
     ];
-
-    function openBriefing() { document.getElementById('briefing-screen').style.display = 'flex'; }
-    function closeBriefing() { document.getElementById('briefing-screen').style.display = 'none'; }
 
     function joinRoom() {
         roomId = document.getElementById('room-id').value.trim().toUpperCase();
@@ -191,7 +172,7 @@
         const area = document.getElementById('options-area');
         area.innerHTML = '';
         if (!gameActive) {
-            document.getElementById('turn-info').innerText = ">> RAKİP BEKLENİYOR...";
+            document.getElementById('turn-info').innerText = ">> RAKİP SİNYALİ BEKLENİYOR...";
             return;
         }
 
@@ -226,8 +207,8 @@
             document.getElementById('q-text').innerText = "VERİ PAKETİ BEKLENİYOR...";
         }
 
-        if(state.hirsizP >= 92) { alert("DR. PARALEL SİSTEMDEN KAÇTI!"); reset(); }
-        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN HEDEFİ YAKALADI!"); reset(); }
+        if(state.hirsizP >= 92) { alert("DR. PARALEL KAÇTI!"); reset(); }
+        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN YAKALADI!"); reset(); }
     }
 
     function reset() { db.ref('rooms/' + roomId).remove(); setTimeout(() => location.reload(), 500); }
