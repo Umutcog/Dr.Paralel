@@ -3,62 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v17.1</title>
+    <title>NEBULA: CYBER_OS v17.2</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #39FF14; --cyber-bg: #050505; --win-gray: #c0c0c0; }
-        body { margin: 0; background: var(--cyber-bg); font-family: 'VT323', monospace; color: var(--neon-green); overflow: hidden; }
+        :root { --neon-green: #39FF14; --cyber-turq: #008080; --win-gray: #c0c0c0; }
+        body { margin: 0; background: var(--cyber-turq); font-family: 'VT323', monospace; color: white; overflow: hidden; }
         
-        @keyframes shake { 0%, 100% {transform: translate(0,0);} 25% {transform: translate(-5px,2px);} 75% {transform: translate(5px,-2px);} }
-        .shake { animation: shake 0.2s ease-in-out 2; }
-        .flash-green { background: #003300 !important; }
-        .flash-red { background: #330000 !important; }
-
+        /* Animasyonlar */
+        @keyframes shake { 0% {left:0} 25% {left:-10px} 50% {left:10px} 75% {left:-10px} 100% {left:0} }
+        .shake { animation: shake 0.3s ease-in-out; position: relative; }
+        .flash-green { background: rgba(57, 255, 20, 0.4) !important; transition: 0.2s; }
+        .flash-red { background: rgba(255, 0, 0, 0.4) !important; transition: 0.2s; }
+        
+        /* Masaüstü */
         .desktop-icons { position: absolute; top: 15px; left: 15px; display: grid; grid-template-columns: repeat(2, 90px); gap: 20px; z-index: 1; }
-        .icon { text-align: center; opacity: 0.5; font-size: 13px; color: white; }
-        .icon-img { font-size: 30px; margin-bottom: 2px; }
+        .icon { text-align: center; color: white; text-shadow: 1px 1px 2px black; font-size: 13px; }
+        .icon-img { font-size: 32px; filter: drop-shadow(2px 2px 0px black); }
 
-        #login-screen, #briefing-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); }
-        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 380px; padding: 2px; box-shadow: 12px 12px 0 black; color: black; }
+        /* Pencereler */
+        #login-screen, #briefing-screen { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); }
+        .win-dialog { background: var(--win-gray); border: 3px outset #eee; width: 380px; padding: 2px; box-shadow: 8px 8px 0 black; color: black; }
         .win-header { background: linear-gradient(90deg, #000080, #0080ff); color: white; padding: 6px; font-weight: bold; display: flex; justify-content: space-between; }
         .win-content { padding: 15px; background: #c0c0c0; border: 2px inset white; }
         
-        input { width: 90%; padding: 10px; margin: 15px 0; border: 3px inset white; font-family: 'VT323'; font-size: 26px; text-align: center; background: black; color: var(--neon-green); }
+        input { width: 90%; padding: 10px; margin: 15px 0; border: 3px inset white; font-family: 'VT323'; font-size: 26px; text-align: center; background: white; color: black; }
         .btn-win { background: var(--win-gray); border: 3px outset white; padding: 12px; cursor: pointer; font-family: 'VT323'; font-size: 22px; width: 100%; font-weight: bold; }
 
         #desktop { display: none; width: 100vw; height: 100vh; }
-        .main-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 750px; background: var(--win-gray); border: 3px outset white; color: black; }
-        .terminal-box { background: black; color: var(--neon-green); padding: 12px; border: 3px inset gray; min-height: 190px; }
+        .main-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 750px; background: var(--win-gray); border: 3px outset white; color: black; box-shadow: 15px 15px 0 rgba(0,0,0,0.3); }
+        .terminal-box { background: black; color: var(--neon-green); padding: 12px; border: 3px inset gray; min-height: 200px; transition: 0.3s; }
         
-        .dist-track { height: 45px; background: #111; border: 2px solid var(--neon-green); position: relative; margin: 45px 0; border-radius: 6px; }
-        .char-icon { position: absolute; transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 34px; text-align: center; width: 80px; z-index: 5; }
-        .char-label { font-size: 11px; display: block; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; margin-top: -4px; line-height: 1.2; }
-        .is-me { filter: drop-shadow(0 0 10px var(--neon-green)); }
-        .is-me .char-label { color: gold; border: 1px solid gold; font-weight: bold; }
+        /* Karakterler */
+        .dist-track { height: 50px; background: #222; border: 3px solid #555; position: relative; margin: 45px 0; border-radius: 4px; }
+        .char-icon { position: absolute; transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 36px; text-align: center; width: 85px; z-index: 5; }
+        .char-label { font-size: 11px; display: block; background: rgba(0,0,0,0.8); color: white; padding: 2px; border-radius: 4px; line-height: 1.1; margin-top: -2px; }
+        .is-me { filter: drop-shadow(0 0 15px var(--neon-green)); transform: scale(1.15); }
+        .is-me::before { content: '▼'; position: absolute; top: -25px; left: 30px; color: var(--neon-green); font-size: 20px; animation: bounce 0.5s infinite alternate; }
+        
+        @keyframes bounce { from {top: -25px} to {top: -35px} }
     </style>
 </head>
 <body id="body-main">
 
     <div class="desktop-icons">
         <div class="icon"><div class="icon-img">🖥️</div>Sistem</div>
-        <div class="icon"><div class="icon-img">🗑️</div>Geri_Dönüşüm</div>
-        <div class="icon"><div class="icon-img">📁</div>Veri_Arşivi</div>
-        <div class="icon"><div class="icon-img">📡</div>Sinyal_Taraması</div>
-        <div class="icon"><div class="icon-img">🛡️</div>Güvenlik</div>
-        <div class="icon"><div class="icon-img">☣️</div>Malware</div>
-        <div class="icon"><div class="icon-img">🔌</div>Proxy_Hub</div>
-        <div class="icon" style="color:red"><div class="icon-img">🚨</div>DR_PARALEL_ALARM</div>
+        <div class="icon"><div class="icon-img">🗑️</div>Çöp Kutusu</div>
+        <div class="icon"><div class="icon-img">📁</div>Dosyalar</div>
+        <div class="icon"><div class="icon-img">📡</div>Anten</div>
+        <div class="icon"><div class="icon-img">🛡️</div>Kalkan</div>
+        <div class="icon"><div class="icon-img">☣️</div>Virüs</div>
+        <div class="icon"><div class="icon-img">🔌</div>Bağlantı</div>
+        <div class="icon" style="color:yellow"><div class="icon-img">🚨</div>ALARM</div>
     </div>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>NEBULA_LOGIN_v17.1</span></div>
+            <div class="win-header"><span>SİSTEME GİRİŞ v17.2</span></div>
             <div class="win-content">
-                <div id="status-msg">>> OPERASYON KODU BEKLENİYOR...</div>
-                <input type="text" id="room-id" placeholder="ODA KODUNU GİR">
-                <button class="btn-win" onclick="joinRoom()">OPERASYONA KATIL</button>
+                <div id="status-msg">>> OPERASYON KODUNU GİRİN...</div>
+                <input type="text" id="room-id" placeholder="ODA KODU">
+                <button class="btn-win" onclick="joinRoom()">BAĞLAN</button>
             </div>
         </div>
     </div>
@@ -66,28 +72,28 @@
     <div id="briefing-screen" style="display:none;">
         <div class="win-dialog">
             <div class="win-header"><span>GÖREV_BRİFİNGİ.TXT</span></div>
-            <div class="win-content" style="font-size:18px; color: #111;">
-                <p><strong>AMACINIZ:</strong> Siber kovalamacayı kazanın!</p>
-                <p><strong>SİBER AJAN:</strong> Soruları bilerek Dr. Paralel'e yaklaşın ve onu yakalayın.</p>
-                <p><strong>DR. PARALEL:</strong> Soruları bilerek arayı açın ve sistemden kaçın.</p>
-                <p style="font-size: 14px; border-top: 1px solid #999; padding-top: 5px;">* Doğru cevap sizi ileri taşır, yanlış cevap geriletir.</p>
-                <button class="btn-win" onclick="closeBriefing()">ANLAŞILDI, BAŞLA!</button>
+            <div class="win-content" style="font-size:19px; color: #111;">
+                <p><strong>DİKKAT:</strong> Siber takip başlıyor!</p>
+                <p><strong>AJAN:</strong> Doğru cevapla Hedef'i yakala.</p>
+                <p><strong>DR. PARALEL:</strong> Doğru cevapla sistemden kaç.</p>
+                <p style="background:yellow; padding:5px;">* Karakterinin üzerinde YEŞİL OK olacak!</p>
+                <button class="btn-win" onclick="closeBriefing()">ANLAŞILDI!</button>
             </div>
         </div>
     </div>
 
     <div id="desktop">
-        <div class="main-window">
-            <div class="win-header"><span>OPERASYON_TERMİNALİ</span><span>_ [] X</span></div>
+        <div class="main-window" id="win-main">
+            <div class="win-header"><span>TERMİNAL_EKRANI</span><span>_ [] X</span></div>
             <div style="padding: 12px;">
-                <div id="role-indicator" style="font-size: 20px; font-weight: bold; background: #000; color: #39FF14; padding: 10px; text-align: center; border: 2px dashed #39FF14; margin-bottom: 15px;">BAĞLANTI_KURULUYOR...</div>
+                <div id="role-indicator" style="font-size: 22px; font-weight: bold; background: #000; color: gold; padding: 10px; text-align: center; border: 2px solid gold; margin-bottom: 15px;">YÜKLENİYOR...</div>
                 <div class="terminal-box" id="terminal">
                     <div id="turn-info">SİNYAL_ARANIYOR...</div>
                     <div class="dist-track">
                         <div id="char-ajan" class="char-icon">🕵️<span class="char-label" id="label-ajan">AJAN</span></div>
                         <div id="char-hirsiz" class="char-icon">😈<span class="char-label" id="label-hirsiz">DR. PARALEL</span></div>
                     </div>
-                    <div id="log-area" style="font-size:14px; color:#555; margin-top:20px; border-top: 1px solid #333; padding-top: 5px;">>> Sistem logları hazır.</div>
+                    <div id="log-area" style="font-size:14px; color:#555; border-top: 1px solid #333; padding-top: 5px;">>> Sistem hazır.</div>
                 </div>
                 <div id="game-area" style="margin-top: 20px; text-align: center;">
                     <h2 id="q-text" style="font-size: 26px; color: #111; min-height: 70px;">...</h2>
@@ -131,22 +137,17 @@
             if (!data || !data.p1) {
                 myRole = 'hirsiz';
                 roomRef.update({ ajanP: 0, hirsizP: 50, idx: 0, p1: true });
-                db.ref('rooms/' + roomId + '/p1').onDisconnect().remove();
-                showBriefing();
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('briefing-screen').style.display = 'flex';
             } else if (data.p1 && !data.p2) {
                 myRole = 'ajan';
                 roomRef.update({ p2: true });
-                db.ref('rooms/' + roomId + '/p2').onDisconnect().remove();
-                showBriefing();
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('briefing-screen').style.display = 'flex';
             } else {
                 document.getElementById('status-msg').innerText = "!! SİSTEM DOLU !!";
             }
         });
-    }
-
-    function showBriefing() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('briefing-screen').style.display = 'flex';
     }
 
     function closeBriefing() {
@@ -156,40 +157,36 @@
     }
 
     function startSync() {
-        const roleText = myRole === 'hirsiz' ? "DR. PARALEL" : "SİBER AJAN";
-        document.getElementById('role-indicator').innerText = "ROLÜNÜZ: " + roleText;
-        
-        // Karakter etiketlerini güncelle (Sen/Rakip)
+        document.getElementById('role-indicator').innerText = "ROLÜN: " + (myRole === 'hirsiz' ? "DR. PARALEL" : "SİBER AJAN");
         if(myRole === 'hirsiz') {
-            document.getElementById('label-hirsiz').innerHTML = "DR. PARALEL<br>(Sen)";
-            document.getElementById('label-ajan').innerHTML = "AJAN<br>(Rakip)";
+            document.getElementById('label-hirsiz').innerHTML = "DR. PARALEL<br><b>(SEN)</b>";
+            document.getElementById('label-ajan').innerHTML = "AJAN<br>(RAKİP)";
             document.getElementById('char-hirsiz').classList.add('is-me');
         } else {
-            document.getElementById('label-ajan').innerHTML = "AJAN<br>(Sen)";
-            document.getElementById('label-hirsiz').innerHTML = "DR. PARALEL<br>(Rakip)";
+            document.getElementById('label-ajan').innerHTML = "AJAN<br><b>(SEN)</b>";
+            document.getElementById('label-hirsiz').innerHTML = "DR. PARALEL<br>(RAKİP)";
             document.getElementById('char-ajan').classList.add('is-me');
         }
-
         db.ref('rooms/' + roomId).on('value', (snap) => {
             const data = snap.val();
             if(data) { 
                 if(state.idx !== data.idx) triggerEffect(data.lastResult);
-                state = data;
-                render(data.p1 && data.p2); 
+                state = data; render(data.p1 && data.p2); 
             }
         });
     }
 
     function triggerEffect(res) {
         if(!res) return;
-        const body = document.getElementById('body-main');
+        const term = document.getElementById('terminal');
+        const win = document.getElementById('win-main');
         if(res.includes("BAŞARILI")) {
-            body.classList.add('flash-green');
-            setTimeout(() => body.classList.remove('flash-green'), 300);
+            term.classList.add('flash-green');
+            setTimeout(() => term.classList.remove('flash-green'), 400);
         } else {
-            body.classList.add('flash-red');
-            document.getElementById('terminal').classList.add('shake');
-            setTimeout(() => { body.classList.remove('flash-red'); document.getElementById('terminal').classList.remove('shake'); }, 400);
+            term.classList.add('flash-red');
+            win.classList.add('shake');
+            setTimeout(() => { term.classList.remove('flash-red'); win.classList.remove('shake'); }, 400);
         }
         document.getElementById('log-area').innerText = ">> SON ANALİZ: " + res;
     }
@@ -208,7 +205,7 @@
         const isMyTurn = (myRole === 'hirsiz' && state.idx % 2 === 0) || (myRole === 'ajan' && state.idx % 2 !== 0);
 
         if (isMyTurn) {
-            document.getElementById('turn-info').innerText = ">> SENİN SIRAN! VERİ GİRİŞİ YAP.";
+            document.getElementById('turn-info').innerText = ">> SENİN SIRAN!";
             document.getElementById('q-text').innerText = task.q;
             let opts = task.opts.map((t, i) => ({ t, i })).sort(() => Math.random() - 0.5);
             opts.forEach((opt) => {
@@ -232,11 +229,11 @@
             });
         } else {
             document.getElementById('turn-info').innerText = ">> RAKİP SIZMA YAPIYOR...";
-            document.getElementById('q-text').innerText = "VERİ PAKETİ BEKLENİYOR...";
+            document.getElementById('q-text').innerText = "VERİ BEKLENİYOR...";
         }
 
-        if(state.hirsizP >= 92) { alert("OPERASYON BAŞARISIZ: DR. PARALEL KAÇTI!"); reset(); }
-        else if(state.ajanP >= (state.hirsizP - 2)) { alert("OPERASYON BAŞARILI: AJAN YAKALADI!"); reset(); }
+        if(state.hirsizP >= 92) { alert("DR. PARALEL KAÇTI!"); reset(); }
+        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN YAKALADI!"); reset(); }
     }
 
     function reset() { db.ref('rooms/' + roomId).remove(); setTimeout(() => location.reload(), 500); }
