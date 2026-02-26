@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v17.2</title>
+    <title>NEBULA: CYBER_OS v17.3</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
         :root { --neon-green: #39FF14; --cyber-turq: #008080; --win-gray: #c0c0c0; }
         body { margin: 0; background: var(--cyber-turq); font-family: 'VT323', monospace; color: white; overflow: hidden; }
         
-        /* Animasyonlar */
+        /* Efektler */
         @keyframes shake { 0% {left:0} 25% {left:-10px} 50% {left:10px} 75% {left:-10px} 100% {left:0} }
         .shake { animation: shake 0.3s ease-in-out; position: relative; }
         .flash-green { background: rgba(57, 255, 20, 0.4) !important; transition: 0.2s; }
@@ -43,6 +43,16 @@
         .is-me::before { content: '▼'; position: absolute; top: -25px; left: 30px; color: var(--neon-green); font-size: 20px; animation: bounce 0.5s infinite alternate; }
         
         @keyframes bounce { from {top: -25px} to {top: -35px} }
+
+        /* Sonuç Ekranı ve Video */
+        #end-screen { 
+            position: fixed; top:0; left:0; width:100%; height:100%; 
+            background: rgba(0,0,0,0.95); z-index: 3000; 
+            display: none; flex-direction: column; align-items: center; justify-content: center; 
+            color: white; text-align: center; font-family: 'VT323';
+        }
+        #end-video { width: 90%; max-width: 500px; border: 4px solid var(--neon-green); box-shadow: 0 0 20px var(--neon-green); margin-bottom: 20px; display: none; }
+        .end-text { font-size: 28px; margin: 20px; color: gold; text-shadow: 2px 2px 5px black; max-width: 80%; }
     </style>
 </head>
 <body id="body-main">
@@ -60,7 +70,7 @@
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>SİSTEME GİRİŞ v17.2</span></div>
+            <div class="win-header"><span>SİSTEME GİRİŞ v17.3</span></div>
             <div class="win-content">
                 <div id="status-msg">>> OPERASYON KODUNU GİRİN...</div>
                 <input type="text" id="room-id" placeholder="ODA KODU">
@@ -74,7 +84,7 @@
             <div class="win-header"><span>GÖREV_BRİFİNGİ.TXT</span></div>
             <div class="win-content" style="font-size:19px; color: #111;">
                 <p><strong>DİKKAT:</strong> Siber takip başlıyor!</p>
-                <p><strong>AJAN:</strong> Doğru cevapla Hedef'i yakala.</p>
+                <p><strong>AJAN:</strong> Doğru cevapla Dr. Paralel'e yaklaş.</p>
                 <p><strong>DR. PARALEL:</strong> Doğru cevapla sistemden kaç.</p>
                 <p style="background:yellow; padding:5px;">* Karakterinin üzerinde YEŞİL OK olacak!</p>
                 <button class="btn-win" onclick="closeBriefing()">ANLAŞILDI!</button>
@@ -101,6 +111,15 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="end-screen">
+        <h1 id="end-title" style="font-size: 40px; margin-bottom: 20px;">OPERASYON TAMAMLANDI</h1>
+        <video id="end-video" autoplay loop muted playsinline>
+            <source src="http://googleusercontent.com/generated_video_content/5078257925414275161" type="video/mp4">
+        </video>
+        <div id="end-quote" class="end-text"></div>
+        <button class="btn-win" style="width: 250px; margin-top: 20px;" onclick="location.reload()">SİSTEMİ YENİDEN BAŞLAT</button>
     </div>
 
 <script>
@@ -171,7 +190,8 @@
             const data = snap.val();
             if(data) { 
                 if(state.idx !== data.idx) triggerEffect(data.lastResult);
-                state = data; render(data.p1 && data.p2); 
+                state = data; 
+                render(data.p1 && data.p2); 
             }
         });
     }
@@ -232,11 +252,32 @@
             document.getElementById('q-text').innerText = "VERİ BEKLENİYOR...";
         }
 
-        if(state.hirsizP >= 92) { alert("DR. PARALEL KAÇTI!"); reset(); }
-        else if(state.ajanP >= (state.hirsizP - 2)) { alert("AJAN YAKALADI!"); reset(); }
+        if(state.hirsizP >= 92) { showEndGame('hirsiz'); }
+        else if(state.ajanP >= (state.hirsizP - 2)) { showEndGame('ajan'); }
     }
 
-    function reset() { db.ref('rooms/' + roomId).remove(); setTimeout(() => location.reload(), 500); }
+    function showEndGame(winner) {
+        const screen = document.getElementById('end-screen');
+        const title = document.getElementById('end-title');
+        const quote = document.getElementById('end-quote');
+        const video = document.getElementById('end-video');
+        
+        screen.style.display = 'flex';
+        
+        if(winner === 'ajan') {
+            title.innerText = "OPERASYON BAŞARILI!";
+            title.style.color = "var(--neon-green)";
+            quote.innerText = '"Kaçışın sona erdi doktor. Yanına eşofman al, hapishanede lazım olacak."';
+            video.style.display = 'block';
+        } else {
+            title.innerText = "OPERASYON BAŞARISIZ!";
+            title.style.color = "red";
+            quote.innerText = '"Sinyal kesildi... Dr. Paralel bulutların arasında kayboldu."';
+            video.style.display = 'none';
+        }
+        
+        db.ref('rooms/' + roomId).remove();
+    }
 </script>
 </body>
 </html>
