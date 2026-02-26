@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v17.3</title>
+    <title>NEBULA: CYBER_OS v17.4</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
         :root { --neon-green: #39FF14; --cyber-turq: #008080; --win-gray: #c0c0c0; }
         body { margin: 0; background: var(--cyber-turq); font-family: 'VT323', monospace; color: white; overflow: hidden; }
         
-        /* Efektler */
+        /* Animasyonlar */
         @keyframes shake { 0% {left:0} 25% {left:-10px} 50% {left:10px} 75% {left:-10px} 100% {left:0} }
         .shake { animation: shake 0.3s ease-in-out; position: relative; }
         .flash-green { background: rgba(57, 255, 20, 0.4) !important; transition: 0.2s; }
@@ -44,15 +44,15 @@
         
         @keyframes bounce { from {top: -25px} to {top: -35px} }
 
-        /* Sonuç Ekranı ve Video */
+        /* Sonuç Ekranı ve Resim */
         #end-screen { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: rgba(0,0,0,0.95); z-index: 3000; 
             display: none; flex-direction: column; align-items: center; justify-content: center; 
             color: white; text-align: center; font-family: 'VT323';
         }
-        #end-video { width: 90%; max-width: 500px; border: 4px solid var(--neon-green); box-shadow: 0 0 20px var(--neon-green); margin-bottom: 20px; display: none; }
-        .end-text { font-size: 28px; margin: 20px; color: gold; text-shadow: 2px 2px 5px black; max-width: 80%; }
+        #end-img { width: 90%; max-width: 450px; border: 4px solid var(--neon-green); box-shadow: 0 0 20px var(--neon-green); margin-bottom: 20px; border-radius: 8px; }
+        .end-text { font-size: 28px; margin: 15px; color: gold; text-shadow: 2px 2px 5px black; max-width: 85%; line-height: 1.2; }
     </style>
 </head>
 <body id="body-main">
@@ -64,13 +64,12 @@
         <div class="icon"><div class="icon-img">📡</div>Anten</div>
         <div class="icon"><div class="icon-img">🛡️</div>Kalkan</div>
         <div class="icon"><div class="icon-img">☣️</div>Virüs</div>
-        <div class="icon"><div class="icon-img">🔌</div>Bağlantı</div>
         <div class="icon" style="color:yellow"><div class="icon-img">🚨</div>ALARM</div>
     </div>
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>SİSTEME GİRİŞ v17.3</span></div>
+            <div class="win-header"><span>SİSTEME GİRİŞ v17.4</span></div>
             <div class="win-content">
                 <div id="status-msg">>> OPERASYON KODUNU GİRİN...</div>
                 <input type="text" id="room-id" placeholder="ODA KODU">
@@ -114,12 +113,10 @@
     </div>
 
     <div id="end-screen">
-        <h1 id="end-title" style="font-size: 40px; margin-bottom: 20px;">OPERASYON TAMAMLANDI</h1>
-        <video id="end-video" autoplay loop muted playsinline>
-            <source src="http://googleusercontent.com/generated_video_content/5078257925414275161" type="video/mp4">
-        </video>
+        <h1 id="end-title" style="font-size: 36px; margin-bottom: 15px;">OPERASYON TAMAMLANDI</h1>
+        <img id="end-img" src="" alt="Sonuç Görseli">
         <div id="end-quote" class="end-text"></div>
-        <button class="btn-win" style="width: 250px; margin-top: 20px;" onclick="location.reload()">SİSTEMİ YENİDEN BAŞLAT</button>
+        <button class="btn-win" style="width: 250px;" onclick="location.reload()">SİSTEMİ YENİDEN BAŞLAT</button>
     </div>
 
 <script>
@@ -190,8 +187,7 @@
             const data = snap.val();
             if(data) { 
                 if(state.idx !== data.idx) triggerEffect(data.lastResult);
-                state = data; 
-                render(data.p1 && data.p2); 
+                state = data; render(data.p1 && data.p2); 
             }
         });
     }
@@ -260,7 +256,7 @@
         const screen = document.getElementById('end-screen');
         const title = document.getElementById('end-title');
         const quote = document.getElementById('end-quote');
-        const video = document.getElementById('end-video');
+        const img = document.getElementById('end-img');
         
         screen.style.display = 'flex';
         
@@ -268,12 +264,13 @@
             title.innerText = "OPERASYON BAŞARILI!";
             title.style.color = "var(--neon-green)";
             quote.innerText = '"Kaçışın sona erdi doktor. Yanına eşofman al, hapishanede lazım olacak."';
-            video.style.display = 'block';
+            img.src = "https://googleusercontent.com/image_generation_content/1"; // En son ürettiğimiz başarılı yakalama görseli
+            img.style.display = 'block';
         } else {
             title.innerText = "OPERASYON BAŞARISIZ!";
             title.style.color = "red";
             quote.innerText = '"Sinyal kesildi... Dr. Paralel bulutların arasında kayboldu."';
-            video.style.display = 'none';
+            img.style.display = 'none'; // Hırsız görselini yarın ekleriz
         }
         
         db.ref('rooms/' + roomId).remove();
