@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA: CYBER_OS v17.4</title>
+    <title>NEBULA: CYBER_OS v17.5</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -44,15 +44,15 @@
         
         @keyframes bounce { from {top: -25px} to {top: -35px} }
 
-        /* Sonuç Ekranı ve Resim */
+        /* Final Ekranı */
         #end-screen { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: rgba(0,0,0,0.95); z-index: 3000; 
+            background: #000; z-index: 3000; 
             display: none; flex-direction: column; align-items: center; justify-content: center; 
             color: white; text-align: center; font-family: 'VT323';
         }
-        #end-img { width: 90%; max-width: 450px; border: 4px solid var(--neon-green); box-shadow: 0 0 20px var(--neon-green); margin-bottom: 20px; border-radius: 8px; }
-        .end-text { font-size: 28px; margin: 15px; color: gold; text-shadow: 2px 2px 5px black; max-width: 85%; line-height: 1.2; }
+        .big-emoji { font-size: 120px; margin: 20px; filter: drop-shadow(0 0 20px var(--neon-green)); }
+        .end-text { font-size: 32px; margin: 20px; color: gold; max-width: 80%; line-height: 1.3; }
     </style>
 </head>
 <body id="body-main">
@@ -69,7 +69,7 @@
 
     <div id="login-screen">
         <div class="win-dialog">
-            <div class="win-header"><span>SİSTEME GİRİŞ v17.4</span></div>
+            <div class="win-header"><span>SİSTEME GİRİŞ v17.5</span></div>
             <div class="win-content">
                 <div id="status-msg">>> OPERASYON KODUNU GİRİN...</div>
                 <input type="text" id="room-id" placeholder="ODA KODU">
@@ -113,10 +113,10 @@
     </div>
 
     <div id="end-screen">
-        <h1 id="end-title" style="font-size: 36px; margin-bottom: 15px;">OPERASYON TAMAMLANDI</h1>
-        <img id="end-img" src="" alt="Sonuç Görseli">
+        <h1 id="end-title" style="font-size: 44px; margin-bottom: 10px;">OPERASYON RAPORU</h1>
+        <div id="end-emoji" class="big-emoji"></div>
         <div id="end-quote" class="end-text"></div>
-        <button class="btn-win" style="width: 250px;" onclick="location.reload()">SİSTEMİ YENİDEN BAŞLAT</button>
+        <button class="btn-win" style="width: 250px; margin-top: 20px;" onclick="location.reload()">YENİ OPERASYON BAŞLAT</button>
     </div>
 
 <script>
@@ -256,21 +256,22 @@
         const screen = document.getElementById('end-screen');
         const title = document.getElementById('end-title');
         const quote = document.getElementById('end-quote');
-        const img = document.getElementById('end-img');
+        const emoji = document.getElementById('end-emoji');
         
         screen.style.display = 'flex';
         
         if(winner === 'ajan') {
             title.innerText = "OPERASYON BAŞARILI!";
             title.style.color = "var(--neon-green)";
+            emoji.innerText = "⛓️🕵️‍♂️👮";
             quote.innerText = '"Kaçışın sona erdi doktor. Yanına eşofman al, hapishanede lazım olacak."';
-            img.src = "https://googleusercontent.com/image_generation_content/1"; // En son ürettiğimiz başarılı yakalama görseli
-            img.style.display = 'block';
+            screen.style.boxShadow = "inset 0 0 100px #004400";
         } else {
             title.innerText = "OPERASYON BAŞARISIZ!";
-            title.style.color = "red";
-            quote.innerText = '"Sinyal kesildi... Dr. Paralel bulutların arasında kayboldu."';
-            img.style.display = 'none'; // Hırsız görselini yarın ekleriz
+            title.style.color = "#ff0000";
+            emoji.innerText = "😈💨✈️";
+            quote.innerText = '"Sinyal kesildi... Dr. Paralel bulutların arasında izini kaybettirdi!"';
+            screen.style.boxShadow = "inset 0 0 100px #440000";
         }
         
         db.ref('rooms/' + roomId).remove();
